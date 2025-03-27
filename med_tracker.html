@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Daily Medication Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2em;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+    }
+    table {
+      width: 60%;
+      margin: 2em auto;
+      border-collapse: collapse;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 1em;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    th {
+      background-color: #eee;
+    }
+    .morning {
+      background-color: #fff9c4;
+    }
+    .evening {
+      background-color: #bbdefb;
+    }
+    .note {
+      text-align: center;
+      font-size: 0.9em;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>Daily Medication Tracker</h1>
+  <div class="note" id="dateDisplay"></div>
+  <table>
+    <thead>
+      <tr>
+        <th>Medication</th>
+        <th class="morning">Morning Dose</th>
+        <th class="evening">Evening Dose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Estilsona</td>
+        <td class="morning">4 ml</td>
+        <td class="evening">—</td>
+      </tr>
+      <tr>
+        <td>Depakine</td>
+        <td class="morning">1.7 ml</td>
+        <td class="evening">1.7 ml</td>
+      </tr>
+      <tr>
+        <td>Omeprazole</td>
+        <td class="morning">4 ml</td>
+        <td class="evening">—</td>
+      </tr>
+      <tr>
+        <td>Vitamin D</td>
+        <td class="morning">0.2 ml</td>
+        <td class="evening">—</td>
+      </tr>
+      <tr>
+        <td>CBD (progressive)</td>
+        <td class="morning" id="progDoseMorning">Calculating...</td>
+        <td class="evening" id="progDoseEvening">Calculating...</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script>
+    // Display today's date
+    const today = new Date();
+    document.getElementById("dateDisplay").innerText = "Today is: " + today.toDateString();
+
+    // Progressive dosage logic (Med E)
+    const startDate = new Date("2025-03-27"); // starting from March 1, 2025
+    const baseDose = 0.1;
+    const increaseEveryNDays = 4;
+    const doseStep = 0.1;
+
+    const daysElapsed = Math.floor((today - startDate) / (1000 * 3600 * 24));
+    const increaseSteps = Math.floor(daysElapsed / increaseEveryNDays);
+    const currentDose = baseDose + (increaseSteps * doseStep);
+    const doseText = currentDose.toFixed(1) + " ml";
+
+    document.getElementById("progDoseMorning").innerText = doseText;
+    document.getElementById("progDoseEvening").innerText = doseText;
+  </script>
+</body>
+</html>
