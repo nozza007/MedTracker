@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Medication Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 1em;
+      background-color: #f4f4f4;
+      color: #333;
+      margin: 0;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8em;
+      margin-bottom: 0.5em;
+    }
+
+    .note {
+      text-align: center;
+      font-size: 0.95em;
+      color: #555;
+      margin-bottom: 1.5em;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      max-width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+      padding: 1em;
+      border: 1px solid #ccc;
+      text-align: center;
+      font-size: 1em;
+    }
+
+    th {
+      background-color: #eee;
+    }
+
+    .morning {
+      background-color: #fff9c4;
+    }
+
+    .evening {
+      background-color: #bbdefb;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.4em;
+      }
+      th, td {
+        padding: 0.7em;
+        font-size: 0.95em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Daily Medication Tracker</h1>
+  <div class="note" id="dateDisplay"></div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Medication</th>
+          <th class="morning">Morning Dose</th>
+          <th class="evening">Evening Dose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Estilsona</td>
+          <td class="morning">4 ml</td>
+          <td class="evening">—</td>
+        </tr>
+        <tr>
+          <td>Depakine</td>
+          <td class="morning">1.7 ml</td>
+          <td class="evening">1.7 ml</td>
+        </tr>
+        <tr>
+          <td>Omeprazole</td>
+          <td class="morning">4 ml</td>
+          <td class="evening">—</td>
+        </tr>
+        <tr>
+          <td>Vitamin D</td>
+          <td class="morning">0.2 ml</td>
+          <td class="evening">—</td>
+        </tr>
+        <tr>
+          <td>CBD (progressive)</td>
+          <td class="morning" id="progDoseMorning">Calculating...</td>
+          <td class="evening" id="progDoseEvening">Calculating...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // Display today's date
+    const today = new Date();
+    document.getElementById("dateDisplay").innerText = "Today is: " + today.toDateString();
+
+    // Progressive dosage logic (CBD)
+    const startDate = new Date("2025-03-27"); // Adjust as needed
+    const baseDose = 0.1;
+    const increaseEveryNDays = 4;
+    const doseStep = 0.1;
+
+    const daysElapsed = Math.floor((today - startDate) / (1000 * 3600 * 24));
+    const increaseSteps = Math.floor(daysElapsed / increaseEveryNDays);
+    const currentDose = baseDose + (increaseSteps * doseStep);
+    const doseText = currentDose.toFixed(1) + " ml";
+
+    document.getElementById("progDoseMorning").innerText = doseText;
+    document.getElementById("progDoseEvening").innerText = doseText;
+  </script>
+</body>
+</html>
