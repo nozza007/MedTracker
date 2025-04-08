@@ -96,6 +96,25 @@
     display: inline-block;
     margin-bottom: 0.3em;
     }
+    .prog-row {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0.5em;
+}
+
+.prog-row label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85em;
+}
+
+.prog-row input[type="number"] {
+  width: 4em;
+  margin-top: 0.2em;
+}
+
       td > div {
     text-align: left; /* override the default 'center' for nested content */
     }
@@ -197,16 +216,19 @@
               <input type="checkbox" class="prog-toggle" />
               Progressive
               </label>
-              <div class="prog-controls" style="display: none; margin-top: 0.3em;">
-        <label>
-              Increment:
-              <input type="number" class="prog-increment" step="0.1" min="0.1" max="10" style="width: 4em;" />
-              </label>
-              <br />
-              <label>Every (days):</label>
-              <input type="number" class="prog-interval" min="1" max="30" style="width: 4em;" />
-              <br />
-              </div>
+              <div class="prog-controls" style="display: none;">
+  <div class="prog-row">
+    <label>
+      Increment:
+      <input type="number" class="prog-increment" step="0.1" min="0.1" max="10" />
+    </label>
+    <label>
+      Every (days):
+      <input type="number" class="prog-interval" min="1" max="30" />
+    </label>
+  </div>
+</div>
+
             </div>
           </td>
         </tr>
