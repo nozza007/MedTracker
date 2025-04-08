@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Medication Tracker</title>
+  <style>
+    :root {
+      --bg: #fdfdfd;
+      --text: #222;
+      --card: #ffffff;
+      --border: #ddd;
+      --accent-morning: #fef7e0;
+      --accent-evening: #e3f2fd;
+    }
+
+    [data-theme="dark"] {
+      --bg: #1e1e1e;
+      --text: #f4f4f4;
+      --card: #2c2c2c;
+      --border: #444;
+      --accent-morning: #4e4a2a;
+      --accent-evening: #2a3b4e;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 1em;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: all 0.3s ease;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8em;
+      margin-bottom: 0.5em;
+    }
+
+    .note {
+      text-align: center;
+      font-size: 0.95em;
+      color: var(--text);
+      margin-bottom: 1.5em;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      max-width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+      padding: 1em;
+      border: 1px solid var(--border);
+      text-align: center;
+      font-size: 1em;
+    }
+
+    th {
+      background-color: var(--border);
+    }
+
+    .morning {
+      background-color: var(--accent-morning);
+    }
+
+    .evening {
+      background-color: var(--accent-evening);
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.4em;
+      }
+      th, td {
+        padding: 0.7em;
+        font-size: 0.95em;
+      }
+    }
+
+    .toggle-container {
+      text-align: center;
+      margin-top: 1em;
+    }
+
+    .toggle-button {
+      background: none;
+      border: 1px solid var(--border);
+      padding: 0.5em 1em;
+      font-size: 0.9em;
+      cursor: pointer;
+      border-radius: 6px;
+      color: var(--text);
+      background-color: var(--card);
+    }
+  </style>
+</head>
+<body>
+  <h1>Daily Medication Tracker</h1>
+  <div class="note" id="dateDisplay"></div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Medication</th>
+          <th class="morning">Morning Dose</th>
+          <th class="evening">Evening Dose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Estilsona</td>
+          <td class="morning">4 ml</td>
+          <td class="evening">—</td>
+        </tr>
+        <tr>
+          <td>Depakine</td>
+          <td class="morning">1.7 ml</td>
+          <td class="evening">1.7 ml</td>
+        </tr>
+        <tr>
+          <td>Omeprazole</td>
+          <td class="morning">4 ml</td>
+          <td class="evening">—</td>
+        </tr>
+        <tr>
+          <td>Vitamin D</td>
+          <td class="morning">0.2 ml</td>
+          <td class="evening">—</td>
+        </tr>
+        <tr>
+          <td>CBD (progressive)</td>
+          <td class="morning" id="progDoseMorning">Calculating...</td>
+          <td class="evening" id="progDoseEvening">Calculating...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="toggle-container">
+    <button class="toggle-button" onclick="toggleTheme()">Toggle Light/Dark Mode</button>
+  </div>
+
+  <script>
+    // Set today's date
+    const today = new Date();
+    document.getElementById("dateDisplay").innerText = "Today is: " + today.toDateString();
+
+    // CBD dosage logic
+    const startDate = new Date("2025-03-27");
+    const baseDose = 0.1;
+    const increaseEveryNDays = 4;
+    const doseStep = 0.1;
+
+    const daysElapsed = Math.floor((today - startDate) / (1000 * 3600 * 24));
+    const increaseSteps = Math.floor(daysElapsed / increaseEveryNDays);
+    const currentDose = baseDose + (increaseSteps * doseStep);
+    const doseText = currentDose.toFixed(1) + " ml";
+
+    document.getElementById("progDoseMorning").innerText = doseText;
+    document.getElementById("progDoseEvening").innerText = doseText;
+
+    // Theme toggle
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      root.setAttribute("data-theme", "dark");
+    }
+
+    function toggleTheme() {
+      const currentTheme = root.getAttribute("data-theme");
+      const newTheme = currentTheme === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+    }
+  </script>
+</body>
+</html>
