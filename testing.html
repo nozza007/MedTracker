@@ -176,7 +176,7 @@
 
     calculateCBDDose();
 
-    function commitAmendments() {
+function commitAmendments() {
   const rows = document.querySelectorAll("#medTable tbody tr");
 
   rows.forEach(row => {
@@ -199,19 +199,27 @@
       const formatted = newValue.toFixed(1) + " ml";
       const morningCell = row.querySelector(".morning");
       const eveningCell = row.querySelector(".evening");
-
-      morningCell.innerText = formatted;
-      eveningCell.innerText = formatted;
+      
+      // Automatic Checker Logic:
+      // If the evening cell currently has "—" or is empty, update only the morning cell.
+      if (eveningCell.innerText.trim() === "—" || eveningCell.innerText.trim() === "") {
+        morningCell.innerText = formatted;
+      } else {
+        // If both cells already have a value, update both.
+        morningCell.innerText = formatted;
+        eveningCell.innerText = formatted;
+      }
 
       if (isCBD) {
-        cbdBaseDose = newValue;
-        calculateCBDDose();
+        cbdBaseDose = newValue;  // Update the CBD baseline dose.
+        calculateCBDDose();      // Recalculate progressive dosage.
       }
 
       input.value = "";
     }
   });
 }
+
   </script>
 </body>
 </html>
