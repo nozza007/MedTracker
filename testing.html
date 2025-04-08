@@ -92,10 +92,14 @@
       padding: 0.3em;
       font-size: 1em;
     }
-
-    
-
-    
+    .prog-controls label {
+    display: inline-block;
+    margin-bottom: 0.3em;
+    }
+      td > div {
+    text-align: left; /* override the default 'center' for nested content */
+    }
+  
     @media (max-width: 600px) {
       h1 {
         font-size: 1.4em;
@@ -107,6 +111,8 @@
     }
   </style>
 </head>
+
+  
 <body>
   <h1>Daily Medication Tracker</h1>
   <div class="note" id="dateDisplay"></div>
@@ -248,18 +254,7 @@ function commitAmendments() {
       input.value = "";
     }
   });
-}
-
-    .prog-controls label {
-  display: inline-block;
-  margin-bottom: 0.3em;
-}
-td > div {
-  text-align: left; /* override the default 'center' for nested content */
-}
-
-
-    
+}    
    document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".prog-toggle").forEach(toggle => {
     toggle.addEventListener("change", () => {
