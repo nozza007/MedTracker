@@ -1,60 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Daily Medication Tracker</title>
+
+  <!-- ============================ -->
+  <!--        STYLESHEET (CSS)      -->
+  <!-- ============================ -->
   <style>
+    :root {
+      --bg: #fdfdfd;
+      --text: #222;
+      --card: #ffffff;
+      --border: #ddd;
+      --accent-morning: #fef7e0;
+      --accent-evening: #e3f2fd;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      padding: 1em;
-      background-color: #f4f4f4;
-      color: #333;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
+      padding: 1em;
+      background-color: var(--bg);
+      color: var(--text);
     }
 
     h1 {
       text-align: center;
       font-size: 1.8em;
-      margin-bottom: 0.5em;
     }
 
     .note {
       text-align: center;
       font-size: 0.95em;
-      color: #555;
-      margin-bottom: 1.5em;
+      margin-bottom: 1em;
     }
 
     .table-wrapper {
       overflow-x: auto;
       max-width: 100%;
+      margin-bottom: 1.5em;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      background: white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
     th, td {
       padding: 1em;
-      border: 1px solid #ccc;
+      border: 1px solid var(--border);
       text-align: center;
       font-size: 1em;
     }
 
     th {
-      background-color: #eee;
+      background-color: var(--border);
     }
 
     .morning {
-      background-color: #fff9c4;
+      background-color: var(--accent-morning);
     }
 
     .evening {
-      background-color: #bbdefb;
+      background-color: var(--accent-evening);
+    }
+
+    input[type="number"] {
+      width: 4em;
+      padding: 0.3em;
+      font-size: 1em;
+    }
+
+    .commit-button {
+      display: block;
+      margin: 1.5em auto;
+      padding: 0.7em 2em;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    .commit-button:hover {
+      background-color: #0056b3;
+    }
+
+    input.invalid {
+      border: 2px solid #d9534f;
+      background-color: #fff0f0;
+    }
+
+    .prog-wrapper {
+      margin-top: 0.5em;
+      padding: 0.6em;
+      border-radius: 8px;
+      background-color: #f4f6fa;
+      font-size: 0.85em;
+      text-align: left;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .prog-wrapper label {
+      margin-bottom: 0.2em;
+      font-weight: 500;
+    }
+
+    .prog-wrapper input[type="checkbox"] {
+      margin-right: 0.4em;
+    }
+
+    .prog-controls {
+      margin-top: 0.5em;
+      padding-top: 0.5em;
+      border-top: 1px solid #ccc;
+    }
+
+    .prog-controls label,
+    .prog-controls input {
+      display: block;
+      margin-top: 0.4em;
+    }
+
+    .prog-row {
+      display: flex;
+      gap: 1em;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 0.5em;
+    }
+
+    .prog-row input[type="number"] {
+      width: 4em;
+      margin-top: 0.2em;
     }
 
     @media (max-width: 600px) {
@@ -68,67 +156,213 @@
     }
   </style>
 </head>
+
 <body>
+  <!-- HEADER -->
   <h1>Daily Medication Tracker</h1>
   <div class="note" id="dateDisplay"></div>
 
+  <!-- MEDICATION TABLE -->
   <div class="table-wrapper">
-    <table>
+    <table id="medTable">
       <thead>
         <tr>
           <th>Medication</th>
           <th class="morning">Morning Dose</th>
           <th class="evening">Evening Dose</th>
+          <th>Amend Dosage</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <!-- Static medication entries -->
+        <!-- Add more here if needed -->
+        <!-- TODO: Make medication list dynamic in future -->
+        <!-- Placeholder: Dynamic medication loading via Firebase -->
+
+        <!-- Example Row: Estilsona -->
+        <tr data-med="Estilsona">
           <td>Estilsona</td>
           <td class="morning">4 ml</td>
           <td class="evening">—</td>
+          <td><input type="number" step="0.1" min="0" max="10" /></td>
         </tr>
-        <tr>
-          <td>Depakine</td>
-          <td class="morning">1.7 ml</td>
-          <td class="evening">1.7 ml</td>
-        </tr>
-        <tr>
-          <td>Omeprazole</td>
-          <td class="morning">4 ml</td>
-          <td class="evening">—</td>
-        </tr>
-        <tr>
-          <td>Vitamin D</td>
-          <td class="morning">0.2 ml</td>
-          <td class="evening">—</td>
-        </tr>
-        <tr>
+
+        <!-- More medication rows (Depakine, Omeprazole, etc.)... -->
+
+        <!-- Special Case: CBD (progressive dosing) -->
+        <tr data-med="CBD">
           <td>CBD (progressive)</td>
           <td class="morning" id="progDoseMorning">Calculating...</td>
           <td class="evening" id="progDoseEvening">Calculating...</td>
+          <td>
+            <input type="number" step="0.1" min="0" max="10" />
+            <div class="prog-wrapper">
+              <label><input type="checkbox" class="prog-toggle" /> Progressive</label>
+              <div class="prog-controls" style="display: none;">
+                <div class="prog-row">
+                  <label>Increment: <input type="number" class="prog-increment" step="0.1" min="0.1" max="10" /></label>
+                  <label>Every (days): <input type="number" class="prog-interval" min="1" max="30" /></label>
+                </div>
+              </div>
+            </div>
+          </td>
         </tr>
+
       </tbody>
     </table>
   </div>
 
+  <!-- COMMIT BUTTON -->
+  <button class="commit-button" onclick="commitAmendments()">Commit</button>
+
+  <!-- ============================ -->
+  <!--         SCRIPT (JS)          -->
+  <!-- ============================ -->
   <script>
-    // Display today's date
+    // Firebase DB reference
     const today = new Date();
     document.getElementById("dateDisplay").innerText = "Today is: " + today.toDateString();
 
-    // Progressive dosage logic (CBD)
-    const startDate = new Date("2025-03-27"); // Adjust as needed
-    const baseDose = 0.1;
-    const increaseEveryNDays = 4;
-    const doseStep = 0.1;
+    let cbdProgressiveConfig = null;
+    let cbdBaseDose = 0.1;
 
-    const daysElapsed = Math.floor((today - startDate) / (1000 * 3600 * 24));
-    const increaseSteps = Math.floor(daysElapsed / increaseEveryNDays);
-    const currentDose = baseDose + (increaseSteps * doseStep);
-    const doseText = currentDose.toFixed(1) + " ml";
+    function calculateCBDDose() {
+      if (!cbdProgressiveConfig) {
+        const startDate = new Date("2025-03-27");
+        const daysElapsed = Math.floor((today - startDate) / (1000 * 3600 * 24));
+        const steps = Math.floor(daysElapsed / 4);
+        const currentDose = 0.1 + steps * 0.1;
+        document.getElementById("progDoseMorning").innerText = currentDose.toFixed(1) + " ml";
+        document.getElementById("progDoseEvening").innerText = currentDose.toFixed(1) + " ml";
+        return;
+      }
+      const { baseDose, increment, intervalValue, startDate } = cbdProgressiveConfig;
+      const elapsedDays = Math.floor((Date.now() - startDate) / (1000 * 60 * 60 * 24));
+      const steps = Math.floor(elapsedDays / intervalValue);
+      const currentDose = baseDose + (steps * increment);
+      const text = currentDose.toFixed(1) + " ml";
+      document.getElementById("progDoseMorning").innerText = text;
+      document.getElementById("progDoseEvening").innerText = text;
+    }
 
-    document.getElementById("progDoseMorning").innerText = doseText;
-    document.getElementById("progDoseEvening").innerText = doseText;
+    function commitAmendments() {
+      const rows = document.querySelectorAll("#medTable tbody tr");
+
+      rows.forEach(row => {
+        const input = row.querySelector("input[type='number']");
+        const newValue = parseFloat(input.value);
+        const isCBD = row.dataset.med === "CBD";
+        input.classList.remove("invalid");
+
+        const isValid = !isNaN(newValue) && newValue >= 0 && newValue <= 10 && (Math.round(newValue * 10) % 1 === 0);
+        if (!isValid && input.value !== "") {
+          input.classList.add("invalid");
+          return;
+        }
+
+        if (isValid) {
+          const formatted = newValue.toFixed(1) + " ml";
+          const morningCell = row.querySelector(".morning");
+          const eveningCell = row.querySelector(".evening");
+
+          if (eveningCell.innerText.trim() === "—" || eveningCell.innerText.trim() === "") {
+            morningCell.innerText = formatted;
+          } else {
+            morningCell.innerText = formatted;
+            eveningCell.innerText = formatted;
+          }
+
+          const medName = row.dataset.med;
+          const medData = { morning: morningCell.innerText, evening: eveningCell.innerText };
+
+          if (isCBD) {
+            const progToggle = row.querySelector(".prog-toggle");
+            const incrementInput = row.querySelector(".prog-increment");
+            const intervalInput = row.querySelector(".prog-interval");
+            const increment = parseFloat(incrementInput.value);
+            const intervalValue = parseInt(intervalInput.value);
+
+            if (!isNaN(increment) && !isNaN(intervalValue)) {
+              cbdProgressiveConfig = { baseDose: newValue, increment, intervalValue, startDate: Date.now() };
+            } else {
+              cbdProgressiveConfig = { baseDose: newValue, increment: 0, intervalValue: 1, startDate: Date.now() };
+            }
+
+            calculateCBDDose();
+            medData.baseDose = cbdBaseDose;
+            medData.progressive = progToggle.checked;
+            medData.increment = incrementInput?.value || null;
+            medData.interval = intervalInput?.value || null;
+            medData.startDate = new Date().toISOString();
+          }
+
+          database.ref('medications/' + medName).set(medData);
+          input.value = "";
+        }
+      });
+    }
+
+    // Toggle progressive input visibility
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".prog-toggle").forEach(toggle => {
+        toggle.addEventListener("change", () => {
+          const controls = toggle.closest("td").querySelector(".prog-controls");
+          controls.style.display = toggle.checked ? "block" : "none";
+        });
+      });
+    });
+  </script>
+
+  <!-- ============================ -->
+  <!--      FIREBASE INIT + FETCH   -->
+  <!-- ============================ -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBh7B7zxl3EQ1p7lrnAzsPerrwPfytZzpk",
+      authDomain: "med-dosage.firebaseapp.com",
+      databaseURL: "https://med-dosage-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "med-dosage",
+      storageBucket: "med-dosage.appspot.com",
+      messagingSenderId: "598118703351",
+      appId: "1:598118703351:web:f2ff4bc51fca900b08f3f2",
+      measurementId: "G-NH9Q0HQV2Y"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    document.addEventListener("DOMContentLoaded", () => {
+      database.ref('medications').once('value').then(snapshot => {
+        const data = snapshot.val();
+        if (!data) return;
+
+        Object.keys(data).forEach(med => {
+          const medRow = document.querySelector(`tr[data-med="${med}"]`);
+          if (!medRow) return;
+
+          const morningCell = medRow.querySelector('.morning');
+          const eveningCell = medRow.querySelector('.evening');
+          morningCell.innerText = data[med].morning || "—";
+          eveningCell.innerText = data[med].evening || "—";
+
+          if (med === "CBD") {
+            const progToggle = medRow.querySelector(".prog-toggle");
+            const incrementInput = medRow.querySelector(".prog-increment");
+            const intervalInput = medRow.querySelector(".prog-interval");
+            const controls = medRow.querySelector(".prog-controls");
+
+            // Reset progressive UI elements on load
+            progToggle.checked = false;
+            incrementInput.value = "";
+            intervalInput.value = "";
+            controls.style.display = "none";
+
+            cbdProgressiveConfig = null;
+            calculateCBDDose();
+          }
+        });
+      });
+    });
   </script>
 </body>
 </html>
