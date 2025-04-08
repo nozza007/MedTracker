@@ -424,17 +424,22 @@ database.ref('medications').once('value').then(snapshot => {
 
     // If CBD, restore advanced options too
     if (med === "CBD") {
-      const progToggle = medRow.querySelector(".prog-toggle");
-      const incrementInput = medRow.querySelector(".prog-increment");
-      const intervalInput = medRow.querySelector(".prog-interval");
+  const progToggle = medRow.querySelector(".prog-toggle");
+  const incrementInput = medRow.querySelector(".prog-increment");
+  const intervalInput = medRow.querySelector(".prog-interval");
+  const controls = medRow.querySelector(".prog-controls");
 
-      progToggle.checked = data[med].progressive || false;
-      incrementInput.value = data[med].increment || "";
-      intervalInput.value = data[med].interval || "";
+  // Always start untoggled and blank
+  progToggle.checked = false;
+  incrementInput.value = "";
+  intervalInput.value = "";
+  controls.style.display = "none";
 
-      const controls = medRow.querySelector(".prog-controls");
-      controls.style.display = progToggle.checked ? "block" : "none";
-    }
+  // Populate dosage fields only
+  cbdProgressiveConfig = null; // Reset any prior progressive settings
+  calculateCBDDose();
+}
+
   });
 });
 
