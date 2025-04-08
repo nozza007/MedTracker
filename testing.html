@@ -250,10 +250,22 @@ function commitAmendments() {
   });
 }
 
-    document.querySelectorAll(".prog-toggle").forEach(toggle => {
-  toggle.addEventListener("change", () => {
-    const controls = toggle.closest("td").querySelector(".prog-controls");
-    controls.style.display = toggle.checked ? "block" : "none";
+    .prog-controls label {
+  display: inline-block;
+  margin-bottom: 0.3em;
+}
+td > div {
+  text-align: left; /* override the default 'center' for nested content */
+}
+
+
+    
+   document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".prog-toggle").forEach(toggle => {
+    toggle.addEventListener("change", () => {
+      const controls = toggle.closest("td").querySelector(".prog-controls");
+      controls.style.display = toggle.checked ? "block" : "none";
+    });
   });
 });
 
