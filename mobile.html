@@ -22,6 +22,7 @@
       --accent-evening: #e3f2fd;
     }
 
+    /* Styles the body element with global font, layout, background color, and text color */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       max-width: 100%;
@@ -33,6 +34,7 @@
       color: var(--text);
     }
 
+    /* Styles the main heading (h1) with center alignment and font size */
     h1 {
       text-align: center;
       font-size: 1.8em;
@@ -141,6 +143,20 @@
       text-align: center;
     }
 
+    /* Fixes mobile zoom issue */
+    @media (max-width: 480px) {
+      body {
+        zoom: 1;
+      }
+    }
+
+    /* Web-specific fix to prevent full-width button on desktop */
+    @media (min-width: 768px) {
+      .commit-button {
+        max-width: 400px; /* Prevent the button from stretching too wide on larger screens */
+      }
+    }
+    
     /* Adds a subtle gradient effect above the sticky commit button to visually separate it from the content */
     .commit-button::before {
       content: '';
