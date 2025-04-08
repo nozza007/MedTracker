@@ -171,10 +171,6 @@
               <label>Every (days):</label>
               <input type="number" class="prog-interval" min="1" max="30" style="width: 4em;" />
               <br />
-              <label>
-              Interval:
-                <input type="number" class="prog-interval" min="1" max="30" style="width: 4em;" />
-              </label>
               </div>
             </div>
           </td>
@@ -210,19 +206,15 @@
     document.getElementById("progDoseEvening").innerText = text;
     return;
   }
-
-  const { baseDose, increment, intervalValue, intervalUnit, startDate } = cbdProgressiveConfig;
+  const { baseDose, increment, intervalValue, startDate } = cbdProgressiveConfig;
   const elapsedDays = Math.floor((today - startDate) / (1000 * 3600 * 24));
   const steps = Math.floor(elapsedDays / intervalValue);
-  const steps = Math.floor(elapsedUnits / intervalValue);
   const currentDose = baseDose + (steps * increment);
   const text = currentDose.toFixed(1) + " ml";
-
   document.getElementById("progDoseMorning").innerText = text;
   document.getElementById("progDoseEvening").innerText = text;
 }
-
-
+ 
     calculateCBDDose();
 
 function commitAmendments() {
