@@ -192,6 +192,7 @@
   <button class="commit-button" onclick="commitAmendments()">Commit</button>
 
   <script>
+    let cbdProgressiveConfig = null;
     const today = new Date();
     document.getElementById("dateDisplay").innerText = "Today is: " + today.toDateString();
 
@@ -202,13 +203,37 @@
     const intervalDays = 4;
 
     function calculateCBDDose() {
-      const daysElapsed = Math.floor((today - cbdStartDate) / (1000 * 3600 * 24));
-      const steps = Math.floor(daysElapsed / intervalDays);
-      const currentDose = cbdBaseDose + steps * doseStep;
-      const text = currentDose.toFixed(1) + " ml";
-      document.getElementById("progDoseMorning").innerText = text;
-      document.getElementById("progDoseEvening").innerText = text;
-    }
+  if (!cbdProgressiveConfig) {
+    // fallback to default logic
+    const startDate = new Date("2025-03-27");
+    const base = 0.1;
+    const interval = 4;
+    const daysElapsed = Math.floor((today - startDate) / (1000 * 3600 * 24));
+    const steps = Math.floor(daysElapsed / interval);
+    const currentDose = base + steps * 0.1;
+    const text = currentDose.toFixed(1) + " ml";
+    document.getElementById("progDoseMorning").innerText = text;
+    document.getElementById("progDoseEvening").innerText = text;
+    return;
+  }
+
+  const { baseDose, increment, intervalValue, intervalUnit, startDate } = cbdProgressiveConfig;
+
+  let elapsedUnits;
+  if (intervalUnit === "days") {
+    elapsedUnits = Math.floor((today - startDate) / (1000 * 3600 * 24));
+  } else {
+    elapsedUnits = Math.floor((today - startDate) / (1000 * 3600 * intervalValue));
+  }
+
+  const steps = Math.floor(elapsedUnits / intervalValue);
+  const currentDose = baseDose + (steps * increment);
+  const text = currentDose.toFixed(1) + " ml";
+
+  document.getElementById("progDoseMorning").innerText = text;
+  document.getElementById("progDoseEvening").innerText = text;
+}
+
 
     calculateCBDDose();
 
@@ -247,9 +272,37 @@ function commitAmendments() {
       }
 
       if (isCBD) {
-        cbdBaseDose = newValue;  // Update the CBD baseline dose.
-        calculateCBDDose();      // Recalculate progressive dosage.
-      }
+  // Save baseline dose
+  cbdBaseDose = newValue;
+
+  // Check if progressive is enabled
+  const progToggle = row.querySelector(".prog-toggle");
+  if (progToggle && progToggle.checked) {
+    const incrementInput = row.querySelector(".prog-increment");
+    const intervalInput = row.querySelector(".prog-interval");
+    const intervalTypeInput = row.querySelector('input[name="interval-type-CBD"]:checked');
+
+    const increment = parseFloat(incrementInput.value);
+    const intervalValue = parseInt(intervalInput.value);
+    const intervalUnit = intervalTypeInput.value;
+
+    // Basic validation for progressive fields
+    if (!isNaN(increment) && !isNaN(intervalValue)) {
+      cbdProgressiveConfig = {
+        baseDose: newValue,
+        increment,
+        intervalValue,
+        intervalUnit,
+        startDate: new Date()
+      };
+    }
+  } else {
+    cbdProgressiveConfig = null; // reset if not progressive
+  }
+
+  calculateCBDDose(); // Recalculate CBD dose with latest values
+}
+
 
       input.value = "";
     }
