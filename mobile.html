@@ -121,25 +121,27 @@
       font-size: 1em;
     }
 
+
     /* Sticky commit button fixed to bottom of screen for easy mobile access */
     .commit-button {
       position: sticky;
       bottom: 0;
-      left: 0;
-      right: 0;
+      left: 50%;
+      transform: translateX(-50%); /* Center the button */
       z-index: 10;
       background-color: #007bff;
       color: white;
       border: none;
-      border-radius: 0;
+      border-radius: 25px; /* Rounded corners for a sleeker look */
       font-size: 1em;
       cursor: pointer;
-      padding: 1em;
-      width: 100%;
+      padding: 1em 2em; /* Adjust padding to make the button sleeker */
+      width: auto; /* Set width to auto to avoid stretching across the screen */
+      max-width: 90%; /* Prevent it from being too wide, especially on landscape */
       text-align: center;
     }
-    
-    /* ✅ Subtle gradient effect above sticky button */
+
+    /* Adds a subtle gradient effect above the sticky commit button to visually separate it from the content */
     .commit-button::before {
       content: '';
       position: absolute;
@@ -149,16 +151,19 @@
       height: 10px;
       background: linear-gradient(to top, rgba(253, 253, 253, 0.9), transparent);
     }
-    
+
+    /* Changes the commit button's background color when hovered over, providing visual feedback */
     .commit-button:hover {
       background-color: #0056b3;
     }
 
+    /* Styles input fields with invalid values by adding a red border and a light red background */
     input.invalid {
       border: 2px solid #d9534f;
       background-color: #fff0f0;
     }
 
+    /* Styles for the progressive dosage control section, including layout, spacing, and styling of inputs */
     .prog-wrapper {
       margin-top: 0.5em;
       padding: 0.6em;
@@ -169,15 +174,18 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
+    /* Styling for labels inside the progressive dosage control section, including spacing and font weight */
     .prog-wrapper label {
       margin-bottom: 0.2em;
       font-weight: 500;
     }
 
+    /* Adds spacing between the checkbox and its label within the progressive dosage control section */
     .prog-wrapper input[type="checkbox"] {
       margin-right: 0.4em;
     }
 
+    /* Styles the container for the progressive dosage input controls, adding spacing and a top border */
     .prog-controls {
       margin-top: 0.5em;
       padding-top: 0.5em;
