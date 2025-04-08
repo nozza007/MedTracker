@@ -353,22 +353,27 @@ function commitAmendments() {
   }
 
   input.value = "";
+
+
+// Save every medication (not just CBD)
+const medName = row.dataset.med;
+const medData = {
+  morning: morningCell.innerText,
+  evening: eveningCell.innerText,
+};
+
+if (isCBD) {
+  medData.baseDose = cbdBaseDose;
+  medData.progressive = progToggle.checked;
+  medData.increment = incrementInput?.value || null;
+  medData.interval = intervalInput?.value || null;
+  medData.startDate = new Date().toISOString();
+}
+
+database.ref('medications/' + medName).set(medData);
 }
 
   });
-
-  if (isCBD) {
-  // Save to Firebase
-  database.ref('medications/CBD').set({
-    morning: morningCell.innerText,
-    evening: eveningCell.innerText,
-    baseDose: cbdBaseDose,
-    progressive: progToggle.checked,
-    increment: incrementInput?.value || null,
-    interval: intervalInput?.value || null,
-    startDate: new Date().toISOString()
-  });
-}
 
 }    
    document.addEventListener("DOMContentLoaded", () => {
@@ -404,25 +409,35 @@ function commitAmendments() {
   // Existing event listener setup...
   
   // Fetch and apply CBD data from Firebase
-  database.ref('medications/CBD').once('value').then(snapshot => {
-    const data = snapshot.val();
-    if (data) {
-      document.getElementById("progDoseMorning").innerText = data.morning || "—";
-      document.getElementById("progDoseEvening").innerText = data.evening || "—";
+database.ref('medications').once('value').then(snapshot => {
+  const data = snapshot.val();
+  if (!data) return;
 
-      const row = document.querySelector('tr[data-med="CBD"]');
-      const progToggle = row.querySelector(".prog-toggle");
-      const incrementInput = row.querySelector(".prog-increment");
-      const intervalInput = row.querySelector(".prog-interval");
+  Object.keys(data).forEach(med => {
+    const medRow = document.querySelector(`tr[data-med="${med}"]`);
+    if (!medRow) return;
 
-      progToggle.checked = data.progressive || false;
-      incrementInput.value = data.increment || "";
-      intervalInput.value = data.interval || "";
+    const morningCell = medRow.querySelector('.morning');
+    const eveningCell = medRow.querySelector('.evening');
+    morningCell.innerText = data[med].morning || "—";
+    eveningCell.innerText = data[med].evening || "—";
 
-      const controls = row.querySelector(".prog-controls");
+    // If CBD, restore advanced options too
+    if (med === "CBD") {
+      const progToggle = medRow.querySelector(".prog-toggle");
+      const incrementInput = medRow.querySelector(".prog-increment");
+      const intervalInput = medRow.querySelector(".prog-interval");
+
+      progToggle.checked = data[med].progressive || false;
+      incrementInput.value = data[med].increment || "";
+      intervalInput.value = data[med].interval || "";
+
+      const controls = medRow.querySelector(".prog-controls");
       controls.style.display = progToggle.checked ? "block" : "none";
     }
   });
+});
+
 });
 
 </script>
