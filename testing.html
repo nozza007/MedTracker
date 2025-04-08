@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Medication Tracker</title>
+  <style>
+    :root {
+      --bg: #fdfdfd;
+      --text: #222;
+      --card: #ffffff;
+      --border: #ddd;
+      --accent-morning: #fef7e0;
+      --accent-evening: #e3f2fd;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 1em;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8em;
+    }
+
+    .note {
+      text-align: center;
+      font-size: 0.95em;
+      margin-bottom: 1em;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      max-width: 100%;
+      margin-bottom: 1.5em;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+      padding: 1em;
+      border: 1px solid var(--border);
+      text-align: center;
+      font-size: 1em;
+    }
+
+    th {
+      background-color: var(--border);
+    }
+
+    .morning {
+      background-color: var(--accent-morning);
+    }
+
+    .evening {
+      background-color: var(--accent-evening);
+    }
+
+    .commit-button {
+      display: block;
+      margin: 1.5em auto;
+      padding: 0.7em 2em;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    .commit-button:hover {
+      background-color: #0056b3;
+    }
+
+    input[type="number"] {
+      width: 4em;
+      padding: 0.3em;
+      font-size: 1em;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.4em;
+      }
+      th, td {
+        padding: 0.7em;
+        font-size: 0.95em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Daily Medication Tracker</h1>
+  <div class="note" id="dateDisplay"></div>
+
+  <div class="table-wrapper">
+    <table id="medTable">
+      <thead>
+        <tr>
+          <th>Medication</th>
+          <th class="morning">Morning Dose</th>
+          <th class="evening">Evening Dose</th>
+          <th>Amend Dosage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-med="Estilsona">
+          <td>Estilsona</td>
+          <td class="morning">4 ml</td>
+          <td class="evening">—</td>
+          <td><input type="number" step="0.1" min="0" max="10" /></td>
+        </tr>
+        <tr data-med="Depakine">
+          <td>Depakine</td>
+          <td class="morning">1.7 ml</td>
+          <td class="evening">1.7 ml</td>
+          <td><input type="number" step="0.1" min="0" max="10" /></td>
+        </tr>
+        <tr data-med="Omeprazole">
+          <td>Omeprazole</td>
+          <td class="morning">4 ml</td>
+          <td class="evening">—</td>
+          <td><input type="number" step="0.1" min="0" max="10" /></td>
+        </tr>
+        <tr data-med="Vitamin D">
+          <td>Vitamin D</td>
+          <td class="morning">0.2 ml</td>
+          <td class="evening">—</td>
+          <td><input type="number" step="0.1" min="0" max="10" /></td>
+        </tr>
+        <tr data-med="CBD">
+          <td>CBD (progressive)</td>
+          <td class="morning" id="progDoseMorning">Calculating...</td>
+          <td class="evening" id="progDoseEvening">Calculating...</td>
+          <td><input type="number" step="0.1" min="0" max="10" /></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <button class="commit-button" onclick="commitAmendments()">Commit</button>
+
+  <script>
+    const today = new Date();
+    document.getElementById("dateDisplay").innerText = "Today is: " + today.toDateString();
+
+    // Initial CBD progressive dosage calculation
+    let cbdBaseDose = 0.1;
+    const cbdStartDate = new Date("2025-03-27");
+    const doseStep = 0.1;
+    const intervalDays = 4;
+
+    function calculateCBDDose() {
+      const daysElapsed = Math.floor((today - cbdStartDate) / (1000 * 3600 * 24));
+      const steps = Math.floor(daysElapsed / intervalDays);
+      const currentDose = cbdBaseDose + steps * doseStep;
+      const text = currentDose.toFixed(1) + " ml";
+      document.getElementById("progDoseMorning").innerText = text;
+      document.getElementById("progDoseEvening").innerText = text;
+    }
+
+    calculateCBDDose();
+
+    function commitAmendments() {
+      const rows = document.querySelectorAll("#medTable tbody tr");
+
+      rows.forEach(row => {
+        const input = row.querySelector("input[type='number']");
+        const newValue = parseFloat(input.value);
+        const isCBD = row.dataset.med === "CBD";
+
+        if (!isNaN(newValue)) {
+          const formatted = newValue.toFixed(1) + " ml";
+          // For simplicity, we'll apply to both morning and evening (custom logic can go here later)
+          const morningCell = row.querySelector(".morning");
+          const eveningCell = row.querySelector(".evening");
+
+          morningCell.innerText = formatted;
+          eveningCell.innerText = formatted;
+
+          // Update CBD base if applicable
+          if (isCBD) {
+            cbdBaseDose = newValue;
+            calculateCBDDose(); // Recalculate
+          }
+
+          input.value = ""; // clear after commit
+        }
+      });
+    }
+  </script>
+</body>
+</html>
