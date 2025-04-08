@@ -109,6 +109,41 @@
         font-size: 0.95em;
       }
     }
+
+    .prog-wrapper {
+  margin-top: 0.5em;
+  padding: 0.6em;
+  border-radius: 8px;
+  background-color: #f4f6fa;
+  font-size: 0.85em;
+  text-align: left;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.prog-wrapper label {
+  margin-bottom: 0.2em;
+  font-weight: 500;
+}
+
+.prog-wrapper input[type="checkbox"] {
+  margin-right: 0.4em;
+}
+
+.prog-controls {
+  margin-top: 0.5em;
+  padding-top: 0.5em;
+  border-top: 1px solid #ccc;
+}
+
+.prog-controls label,
+.prog-controls input {
+  display: block;
+  margin-top: 0.4em;
+}
+
+.prog-controls input[type="number"] {
+  margin-left: 0.5em;
+}
+
   </style>
 </head>
 
@@ -157,7 +192,7 @@
           <td class="morning" id="progDoseMorning">Calculating...</td>
           <td class="evening" id="progDoseEvening">Calculating...</td>
           <td><input type="number" step="0.1" min="0" max="10" />
-              <div style="margin-top: 0.5em; text-align: left; font-size: 0.85em;">
+              <div class="prog-wrapper">
               <label>
               <input type="checkbox" class="prog-toggle" />
               Progressive
