@@ -93,32 +93,7 @@
       font-size: 1em;
     }
 
-    <div style="margin-top: 0.5em; text-align: left; font-size: 0.85em;">
-  <label>
-    <input type="checkbox" class="prog-toggle" />
-    Progressive
-  </label>
-  <div class="prog-controls" style="display: none; margin-top: 0.3em;">
-    <label>
-      Increment:
-      <input type="number" class="prog-increment" step="0.1" min="0.1" max="10" style="width: 4em;" />
-    </label>
-    <br />
-    <label>
-      <input type="radio" name="interval-type-__MED__" value="days" checked class="prog-interval-type" />
-      Days
-    </label>
-    <label>
-      <input type="radio" name="interval-type-__MED__" value="hours" class="prog-interval-type" />
-      Hours
-    </label>
-    <br />
-    <label>
-      Interval:
-      <input type="number" class="prog-interval" min="1" max="30" style="width: 4em;" />
-    </label>
-  </div>
-</div>
+    
 
     
     @media (max-width: 600px) {
@@ -175,7 +150,34 @@
           <td>CBD (progressive)</td>
           <td class="morning" id="progDoseMorning">Calculating...</td>
           <td class="evening" id="progDoseEvening">Calculating...</td>
-          <td><input type="number" step="0.1" min="0" max="10" /></td>
+          <td><input type="number" step="0.1" min="0" max="10" />
+              <div style="margin-top: 0.5em; text-align: left; font-size: 0.85em;">
+              <label>
+              <input type="checkbox" class="prog-toggle" />
+              Progressive
+              </label>
+              <div class="prog-controls" style="display: none; margin-top: 0.3em;">
+        <label>
+              Increment:
+              <input type="number" class="prog-increment" step="0.1" min="0.1" max="10" style="width: 4em;" />
+              </label>
+              <br />
+              <label>
+              <input type="radio" name="interval-type-CBD" value="days" checked class="prog-interval-type" />
+              Days
+              </label>
+              <label>
+                <input type="radio" name="interval-type-CBD" value="hours" class="prog-interval-type" />
+              Hours
+              </label>
+              <br />
+              <label>
+              Interval:
+                <input type="number" class="prog-interval" min="1" max="30" style="width: 4em;" />
+              </label>
+              </div>
+            </div>
+          </td>
         </tr>
       </tbody>
     </table>
