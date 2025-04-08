@@ -156,7 +156,16 @@
         max-width: 400px; /* Prevent the button from stretching too wide on larger screens */
       }
     }
-    
+
+    /* Adjustments for mobile landscape to ensure button is centered */
+    @media (max-width: 768px) and (orientation: landscape) {
+      .commit-button {
+        max-width: 90%; /* Keep the button within 90% width of the screen */
+        transform: translateX(-50%); /* Ensure it's still centered */
+        left: 50%;
+      }
+    }
+
     /* Adds a subtle gradient effect above the sticky commit button to visually separate it from the content */
     .commit-button::before {
       content: '';
