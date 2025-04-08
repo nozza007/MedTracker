@@ -207,7 +207,7 @@
     return;
   }
   const { baseDose, increment, intervalValue, startDate } = cbdProgressiveConfig;
-  const elapsedDays = Math.floor((today - startDate) / (1000 * 3600 * 24));
+  const elapsedDays = Math.floor((Date.now() - startDate) / (1000 * 60 * 60 * 24));
   const steps = Math.floor(elapsedDays / intervalValue);
   const currentDose = baseDose + (steps * increment);
   const text = currentDose.toFixed(1) + " ml";
@@ -268,7 +268,7 @@ function commitAmendments() {
       baseDose: newValue,
       increment,
       intervalValue,
-      startDate: new Date()
+      startDate: Date.now()
     };
   } else {
     // fallback to fixed dose if config invalid
@@ -276,7 +276,7 @@ function commitAmendments() {
       baseDose: newValue,
       increment: 0,
       intervalValue: 1,
-      startDate: new Date()
+      startDate: Date.now()
     };
   }
 } else {
@@ -285,7 +285,7 @@ function commitAmendments() {
     baseDose: newValue,
     increment: 0,
     intervalValue: 1,
-    startDate: new Date()
+    startDate: Date.now()
   };
 }
 
