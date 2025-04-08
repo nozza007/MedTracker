@@ -168,14 +168,8 @@
               <input type="number" class="prog-increment" step="0.1" min="0.1" max="10" style="width: 4em;" />
               </label>
               <br />
-              <label>
-              <input type="radio" name="interval-type-CBD" value="days" checked class="prog-interval-type" />
-              Days
-              </label>
-              <label>
-                <input type="radio" name="interval-type-CBD" value="hours" class="prog-interval-type" />
-              Hours
-              </label>
+              <label>Every (days):</label>
+              <input type="number" class="prog-interval" min="1" max="30" style="width: 4em;" />
               <br />
               <label>
               Interval:
@@ -218,14 +212,8 @@
   }
 
   const { baseDose, increment, intervalValue, intervalUnit, startDate } = cbdProgressiveConfig;
-
-  let elapsedUnits;
-  if (intervalUnit === "days") {
-    elapsedUnits = Math.floor((today - startDate) / (1000 * 3600 * 24));
-  } else {
-    elapsedUnits = Math.floor((today - startDate) / (1000 * 3600 * intervalValue));
-  }
-
+  const elapsedDays = Math.floor((today - startDate) / (1000 * 3600 * 24));
+  const steps = Math.floor(elapsedDays / intervalValue);
   const steps = Math.floor(elapsedUnits / intervalValue);
   const currentDose = baseDose + (steps * increment);
   const text = currentDose.toFixed(1) + " ml";
@@ -280,11 +268,9 @@ function commitAmendments() {
   if (progToggle && progToggle.checked) {
     const incrementInput = row.querySelector(".prog-increment");
     const intervalInput = row.querySelector(".prog-interval");
-    const intervalTypeInput = row.querySelector('input[name="interval-type-CBD"]:checked');
-
     const increment = parseFloat(incrementInput.value);
     const intervalValue = parseInt(intervalInput.value);
-    const intervalUnit = intervalTypeInput.value;
+    const intervalUnit = "days";
 
     // Basic validation for progressive fields
     if (!isNaN(increment) && !isNaN(intervalValue)) {
