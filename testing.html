@@ -13,6 +13,11 @@
       --accent-morning: #fef7e0;
       --accent-evening: #e3f2fd;
     }
+    
+    input.invalid {
+      border: 2px solid #d9534f;
+      background-color: #fff0f0;
+    }
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -172,27 +177,42 @@
     calculateCBDDose();
 
     function commitAmendments() {
-      const rows = document.querySelectorAll("#medTable tbody tr");
+  const rows = document.querySelectorAll("#medTable tbody tr");
 
-      rows.forEach(row => {
-        const input = row.querySelector("input[type='number']");
-        const newValue = parseFloat(input.value);
-        const isCBD = row.dataset.med === "CBD";
+  rows.forEach(row => {
+    const input = row.querySelector("input[type='number']");
+    const newValue = parseFloat(input.value);
+    const isCBD = row.dataset.med === "CBD";
 
-        if (!isNaN(newValue)) {
-          const formatted = newValue.toFixed(1) + " ml";
-          // For simplicity, we'll apply to both morning and evening (custom logic can go here later)
-          const morningCell = row.querySelector(".morning");
-          const eveningCell = row.querySelector(".evening");
+    // Remove previous error styling
+    input.classList.remove("invalid");
 
-          morningCell.innerText = formatted;
-          eveningCell.innerText = formatted;
+    // Validate input
+    const isValid = !isNaN(newValue) && newValue >= 0 && newValue <= 10 && (Math.round(newValue * 10) % 1 === 0);
 
-          // Update CBD base if applicable
-          if (isCBD) {
-            cbdBaseDose = newValue;
-            calculateCBDDose(); // Recalculate
-          }
+    if (!isValid && input.value !== "") {
+      input.classList.add("invalid");
+      return;
+    }
+
+    if (isValid) {
+      const formatted = newValue.toFixed(1) + " ml";
+      const morningCell = row.querySelector(".morning");
+      const eveningCell = row.querySelector(".evening");
+
+      morningCell.innerText = formatted;
+      eveningCell.innerText = formatted;
+
+      if (isCBD) {
+        cbdBaseDose = newValue;
+        calculateCBDDose();
+      }
+
+      input.value = "";
+    }
+  });
+}
+
 
           input.value = ""; // clear after commit
         }
