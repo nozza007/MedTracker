@@ -474,6 +474,7 @@
     document.addEventListener("DOMContentLoaded", () => {
       database.ref('medications').once('value').then(snapshot => {
         const data = snapshot.val();
+        console.log(data); // Log the data to see what you're receiving
         if (!data) return;
 
         Object.keys(data).forEach(med => {
@@ -486,6 +487,7 @@
           eveningCell.innerText = data[med].evening || "—";
 
           if (med === "CBD") {
+            console.log('CBD Data:', data[med]); // Log CBD specific data
             const progToggle = medRow.querySelector(".prog-toggle");
             const incrementInput = medRow.querySelector(".prog-increment");
             const intervalInput = medRow.querySelector(".prog-interval");
@@ -497,8 +499,18 @@
             intervalInput.value = "";
             controls.style.display = "none";
 
-            cbdProgressiveConfig = null;
-            calculateCBDDose();
+            // Update the progressive dosing configuration
+            cbdProgressiveConfig = {
+            baseDose: data[med].baseDose || 0.1,  // Default to 0.1 if not present
+            increment: data[med].increment || 0.1,
+            intervalValue: data[med].interval || 4,
+            startDate: new Date(data[med].startDate).getTime(),
+            };
+
+          console.log('CBD Progressive Config:', cbdProgressiveConfig); // Log the config
+
+          // Recalculate the CBD dose based on the data retrieved
+          calculateCBDDose();
           }
         });
       });
