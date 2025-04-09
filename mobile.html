@@ -367,6 +367,7 @@
     let cbdBaseDose = 0.1;
 
     function calculateCBDDose() {
+      // If there's no CBD progressive config, calculate from default
       if (!cbdProgressiveConfig) {
         const startDate = new Date("2025-03-27");
         const daysElapsed = Math.floor((today - startDate) / (1000 * 3600 * 24));
@@ -376,14 +377,23 @@
         document.getElementById("progDoseEvening").innerText = currentDose.toFixed(1) + " ml";
         return;
       }
+
+      // Use baseDose from the progressive config, which is updated from Firebase
       const { baseDose, increment, intervalValue, startDate } = cbdProgressiveConfig;
+  
+      // Calculate the number of days passed since the startDate
       const elapsedDays = Math.floor((Date.now() - startDate) / (1000 * 60 * 60 * 24));
       const steps = Math.floor(elapsedDays / intervalValue);
+  
+      // Calculate the current dose based on the base dose and steps
       const currentDose = baseDose + (steps * increment);
       const text = currentDose.toFixed(1) + " ml";
+
+      // Update the UI with the calculated dose
       document.getElementById("progDoseMorning").innerText = text;
       document.getElementById("progDoseEvening").innerText = text;
     }
+
 
     function commitAmendments() {
       const rows = document.querySelectorAll("#medTable tbody tr");
