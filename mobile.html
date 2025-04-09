@@ -150,12 +150,15 @@
       }
       /* Prevent the button from becoming too wide on portrait mobile */
       .commit-button {
-        width: 100%;
-        max-width: 350px; /* You can adjust this value as needed */
+        position: fixed; /* change to fixed for reliable placement on mobile */
+        bottom: 0;
         left: 50%;
-        transform: translateX(-50%); /* Center the button */
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 350px; /* Adjust as needed */
+        padding: 0.6em 1em; /* Optionally tweak padding for a better mobile look */
       }
-    }
+      }
 
     /* Web-specific fix to prevent full-width button on desktop */
     @media (min-width: 768px) {
