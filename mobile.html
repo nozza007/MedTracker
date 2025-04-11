@@ -24,6 +24,18 @@
         --accent-evening: #e3f2fd;
       }
 
+      /* Dark mode overrides */
+      @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1f1f1f;
+        --text: #fdfdfd;
+        --card: #333;
+        --border: #555;
+        --accent-morning: #4e3a25;
+        --accent-evening: #2a3a4e;
+      }
+    }
+
       /* Global body styles */
       body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
