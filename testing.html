@@ -356,7 +356,7 @@
             </td>
           </tr>
 
-           <!-- Example Row: Depakine -->
+           <!-- Example Row: Clobazam -->
           <tr data-med="Clobazam">
             <td>Clobazam</td>
             <td class="morning">1 Drop</td>
@@ -414,7 +414,9 @@
           const morningCell = row.querySelector(".morning");
           const eveningCell = row.querySelector(".evening");
           if (isValid) {
-            const formatted = newValue.toFixed(1) + " ml";
+            // Use a conditional: if medName is Clobazam, use " drops" instead of " ml"
+            const unit = medName === "Clobazam" ? " drops" : " ml";
+            const formatted = newValue.toFixed(1) + unit;
             if (
               eveningCell.innerText.trim() === "—" ||
               eveningCell.innerText.trim() === ""
