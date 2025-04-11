@@ -306,7 +306,7 @@
         <!-- Example Row: Estilsona -->
         <tr data-med="Estilsona">
         <td>Estilsona (progressive)</td>
-        <td class="morning" id="progDoseEstilsonaMorning">4.0 ml</td>
+        <td class="morning" id="progDoseEstilsonaMorning">Calculating...</td>
         <td class="evening" id="progDoseEstilsonaEvening">—</td>
         <td>
           <input type="number" step="0.1" min="0" max="10" />
@@ -332,21 +332,21 @@
 
         <tr data-med="Depakine">
           <td>Depakine</td>
-          <td class="morning">1.7 ml</td>
-          <td class="evening">1.7 ml</td>
+          <td class="morning">Calculating...</td>
+          <td class="evening">Calculating...</td>
           <td><input type="number" step="0.1" min="0" max="10" /></td>
         </tr>
 
         <tr data-med="Omeprazole">
           <td>Omeprazole</td>
-          <td class="morning">4.0 ml</td>
+          <td class="morning">Calculating...</td>
           <td class="evening">—</td>
           <td><input type="number" step="0.1" min="0" max="10" /></td>
         </tr>
 
         <tr data-med="Vitamin D">
           <td>Vitamin D</td>
-          <td class="morning">0.2 ml</td>
+          <td class="morning">Calculating...</td>
           <td class="evening">—</td>
           <td><input type="number" step="0.1" min="0" max="10" /></td>
         </tr>
@@ -425,63 +425,78 @@
       document.getElementById("progDoseEvening").innerText = text;
     }
 
-
+//function to save updated data attributes to firebase.
     function commitAmendments() {
-      const rows = document.querySelectorAll("#medTable tbody tr");
+  const rows = document.querySelectorAll("#medTable tbody tr");
 
-      rows.forEach(row => {
-        const input = row.querySelector("input[type='number']");
-        const newValue = parseFloat(input.value);
-        const isCBD = row.dataset.med === "CBD";
-        input.classList.remove("invalid");
+  rows.forEach(row => {
+    const input = row.querySelector("td:nth-child(4) input[type='number']");
+    const medName = row.dataset.med;
+    const newValue = parseFloat(input.value);
+    input.classList.remove("invalid");
 
-        const isValid = !isNaN(newValue) && newValue >= 0 && newValue <= 10 && (Math.round(newValue * 10) % 1 === 0);
-        if (!isValid && input.value !== "") {
-          input.classList.add("invalid");
-          return;
-        }
-
-        if (isValid) {
-          const formatted = newValue.toFixed(1) + " ml";
-          const morningCell = row.querySelector(".morning");
-          const eveningCell = row.querySelector(".evening");
-
-          if (eveningCell.innerText.trim() === "—" || eveningCell.innerText.trim() === "") {
-            morningCell.innerText = formatted;
-          } else {
-            morningCell.innerText = formatted;
-            eveningCell.innerText = formatted;
-          }
-
-          const medName = row.dataset.med;
-          const medData = { morning: morningCell.innerText, evening: eveningCell.innerText };
-
-          if (isCBD) {
-            const progToggle = row.querySelector(".prog-toggle");
-            const incrementInput = row.querySelector(".prog-increment");
-            const intervalInput = row.querySelector(".prog-interval");
-            const increment = parseFloat(incrementInput.value);
-            const intervalValue = parseInt(intervalInput.value);
-
-            if (!isNaN(increment) && !isNaN(intervalValue)) {
-              cbdProgressiveConfig = { baseDose: newValue, increment, intervalValue, startDate: Date.now() };
-            } else {
-              cbdProgressiveConfig = { baseDose: newValue, increment: 0, intervalValue: 1, startDate: Date.now() };
-            }
-
-            calculateCBDDose();
-            medData.baseDose = newValue;
-            medData.progressive = progToggle.checked;
-            medData.increment = incrementInput?.value || null;
-            medData.interval = intervalInput?.value || null;
-            medData.startDate = new Date().toISOString();
-          }
-
-          database.ref('medications/' + medName).set(medData);
-          input.value = "";
-        }
-      });
+    const isValid = !isNaN(newValue) && newValue >= 0 && newValue <= 10 && (Math.round(newValue * 10) % 1 === 0);
+    // If not valid and not empty, mark it as invalid and skip processing
+    if (!isValid && input.value !== "") {
+      input.classList.add("invalid");
+      return;
     }
+
+    // Retrieve the dose display cells
+    const morningCell = row.querySelector(".morning");
+    const eveningCell = row.querySelector(".evening");
+
+    // Update dose displays only if the input is valid (if left blank, no changes occur)
+    if (isValid) {
+      const formatted = newValue.toFixed(1) + " ml";
+      // If there is no specific evening dosage, update only the morning cell
+      if (eveningCell.innerText.trim() === "—" || eveningCell.innerText.trim() === "") {
+        morningCell.innerText = formatted;
+      } else {
+        morningCell.innerText = formatted;
+        eveningCell.innerText = formatted;
+      }
+    }
+
+    // Create an object to hold our data to write to Firebase.
+    const medData = {
+      morning: morningCell.innerText,
+      evening: eveningCell.innerText
+    };
+
+    // Check for progressive options in this row:
+    // It now resides in the fifth column.
+    const progToggle = row.querySelector("td:nth-child(5) .prog-toggle");
+    if (progToggle) {
+      // Record whether progressive dosing has been enabled.
+      const isProgressive = progToggle.checked;
+      medData.progressive = isProgressive;
+
+      // If progressive dosing is enabled, capture extra progressive parameters.
+      if (isProgressive) {
+        const incrementInput = row.querySelector("td:nth-child(5) .prog-increment");
+        const intervalInput = row.querySelector("td:nth-child(5) .prog-interval");
+
+        const incrementValue = parseFloat(incrementInput.value);
+        const intervalValue = parseInt(intervalInput.value, 10);
+
+        // Only update if both progressive inputs are valid.
+        if (!isNaN(incrementValue) && !isNaN(intervalValue)) {
+          medData.baseDose = newValue; // Use the entered newValue as baseDose.
+          medData.increment = incrementValue;
+          medData.interval = intervalValue;
+          medData.startDate = new Date().toISOString();
+        }
+      }
+    }
+
+    // Write the updated medication data to Firebase.
+    database.ref('medications/' + medName).set(medData);
+    // Clear the input field after committing.
+    input.value = "";
+  });
+}
+
 
     // Toggle progressive input visibility
     document.addEventListener("DOMContentLoaded", () => {
@@ -513,49 +528,43 @@
     const database = firebase.database();
 
     document.addEventListener("DOMContentLoaded", () => {
-      database.ref('medications').once('value').then(snapshot => {
-        const data = snapshot.val();
-        console.log(data); // Log the data to see what you're receiving
-        if (!data) return;
+  database.ref('medications').once('value').then(snapshot => {
+    const data = snapshot.val();
+    console.log(data); // Log the data to see what you're receiving
+    if (!data) return;
 
-        Object.keys(data).forEach(med => {
-          const medRow = document.querySelector(`tr[data-med="${med}"]`);
-          if (!medRow) return;
+    Object.keys(data).forEach(med => {
+      const medRow = document.querySelector(`tr[data-med="${med}"]`);
+      if (!medRow) return;
 
-          const morningCell = medRow.querySelector('.morning');
-          const eveningCell = medRow.querySelector('.evening');
-          morningCell.innerText = data[med].morning || "—";
-          eveningCell.innerText = data[med].evening || "—";
+      // Update morning and evening cells.
+      const morningCell = medRow.querySelector('.morning');
+      const eveningCell = medRow.querySelector('.evening');
+      morningCell.innerText = data[med].morning || "—";
+      eveningCell.innerText = data[med].evening || "—";
 
-          if (med === "CBD") {
-            console.log('CBD Data:', data[med]); // Log CBD specific data
-            const progToggle = medRow.querySelector(".prog-toggle");
-            const incrementInput = medRow.querySelector(".prog-increment");
-            const intervalInput = medRow.querySelector(".prog-interval");
-            const controls = medRow.querySelector(".prog-controls");
+      // Generic handling of progressive options:
+      // Look for the progressive controls in the fifth column.
+      const progToggle = medRow.querySelector("td:nth-child(5) .prog-toggle");
+      if (progToggle && data[med].progressive) {
+        progToggle.checked = true;
 
-            // Reset progressive UI elements on load
-            progToggle.checked = false;
-            incrementInput.value = "";
-            intervalInput.value = "";
-            controls.style.display = "none";
+        const incrementInput = medRow.querySelector("td:nth-child(5) .prog-increment");
+        const intervalInput = medRow.querySelector("td:nth-child(5) .prog-interval");
 
-            // Update the progressive dosing configuration
-            cbdProgressiveConfig = {
-            baseDose: data[med].baseDose || 0.1,  // Default to 0.1 if not present
-            increment: data[med].increment || 0.1,
-            intervalValue: data[med].interval || 4,
-            startDate: new Date(data[med].startDate).getTime(),
-            };
+        if (incrementInput) incrementInput.value = data[med].increment || "";
+        if (intervalInput) intervalInput.value = data[med].interval || "";
 
-          console.log('CBD Progressive Config:', cbdProgressiveConfig); // Log the config
-
-          // Recalculate the CBD dose based on the data retrieved
-          calculateCBDDose();
-          }
-        });
-      });
+        // Optionally, you can decide whether to display the progressive controls by default:
+        const controls = medRow.querySelector("td:nth-child(5) .prog-controls");
+        if (controls) {
+          controls.style.display = "block"; // or leave it hidden until user interaction
+        }
+      }
     });
+  });
+});
+
   </script>
 </body>
 </html>
