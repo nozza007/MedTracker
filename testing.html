@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Firebase core and database SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Daily Medication Tracker</title>
+
+  <!-- ============================ -->
+  <!--        STYLESHEET (CSS)      -->
+  <!-- ============================ -->
   <style>
     :root {
       --bg: #fdfdfd;
@@ -17,20 +21,20 @@
       --accent-morning: #fef7e0;
       --accent-evening: #e3f2fd;
     }
-    
-    input.invalid {
-      border: 2px solid #d9534f;
-      background-color: #fff0f0;
-    }
 
+    /* Styles the body element with global font, layout, background color, and text color */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
+      max-width: 100%;
+      width: 100%;
+      margin: 0 auto;
       padding: 1em;
+      box-sizing: border-box;
       background-color: var(--bg);
       color: var(--text);
     }
 
+    /* Styles the main heading (h1) with center alignment and font size */
     h1 {
       text-align: center;
       font-size: 1.8em;
@@ -46,6 +50,39 @@
       overflow-x: auto;
       max-width: 100%;
       margin-bottom: 1.5em;
+      padding: 0 0.5em;
+      box-sizing: border-box;
+    }
+
+    /* 
+  Media query for screens smaller than 480px: 
+  - Reduces font size and padding for table cells and input fields.
+  - Makes the layout more compact for smaller screens.
+  - Ensures the "commit" button remains large enough for easy tapping.
+*/
+    @media (max-width: 480px) {
+      table {
+        font-size: 0.9em;
+      }
+
+      th, td {
+        padding: 0.5em;
+      }
+
+      input[type="number"] {
+        width: 3em;
+        font-size: 0.9em;
+      }
+
+      .prog-wrapper {
+        font-size: 0.8em;
+        padding: 0.4em;
+      }
+
+      .commit-button {
+        font-size: 1em;
+        padding: 1em;
+      }
     }
 
     table {
@@ -54,6 +91,11 @@
       background: var(--card);
       border: 1px solid var(--border);
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    
+    table {
+      border-radius: 8px;
+      overflow: hidden;
     }
 
     th, td {
@@ -75,106 +117,175 @@
       background-color: var(--accent-evening);
     }
 
-    .commit-button {
-      display: block;
-      margin: 1.5em auto;
-      padding: 0.7em 2em;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 1em;
-      cursor: pointer;
-    }
-
-    .commit-button:hover {
-      background-color: #0056b3;
-    }
-
     input[type="number"] {
       width: 4em;
       padding: 0.3em;
       font-size: 1em;
     }
-    .prog-controls label {
-    display: inline-block;
-    margin-bottom: 0.3em;
+
+
+    /* Sticky commit button fixed to bottom of screen for easy mobile access */
+    .commit-button {
+      position: sticky;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%); /* Center the button */
+      z-index: 10;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 25px; /* Rounded corners for a sleeker look */
+      font-size: 1em;
+      cursor: pointer;
+      padding: 1em 2em; /* Adjust padding to make the button sleeker */
+      width: auto; /* Set width to auto to avoid stretching across the screen */
+      max-width: 90%; /* Prevent it from being too wide, especially on landscape */
+      text-align: center;
     }
+
+    /* Fixes mobile zoom issue */
+    @media (max-width: 480px) {
+      body {
+        zoom: 1;
+      }
+      /* Prevent the button from becoming too wide on portrait mobile */
+      .commit-button {
+        position: fixed; /* change to fixed for reliable placement on mobile */
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 350px; /* Adjust as needed */
+        padding: 0.6em 1em; /* Optionally tweak padding for a better mobile look */
+      }
+      }
+
+    /* Web-specific fix to prevent full-width button on desktop */
+    @media (min-width: 768px) {
+      .commit-button {
+        max-width: 400px; /* Prevent the button from stretching too wide on larger screens */
+      }
+    }
+
+    /* Adjustments for mobile landscape to ensure button is centered */
+    @media (max-width: 768px) and (orientation: landscape) {
+      .commit-button {
+        max-width: 50%; /* Keep the button within 90% width of the screen */
+      }
+    }
+
+    /* Adds a subtle gradient effect above the sticky commit button to visually separate it from the content */
+    .commit-button::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 0;
+      right: 0;
+      height: 10px;
+      background: linear-gradient(to top, rgba(253, 253, 253, 0.9), transparent);
+    }
+
+    /* Changes the commit button's background color when hovered over, providing visual feedback */
+    .commit-button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Styles input fields with invalid values by adding a red border and a light red background */
+    input.invalid {
+      border: 2px solid #d9534f;
+      background-color: #fff0f0;
+    }
+
+    /* Styles for the progressive dosage control section, including layout, spacing, and styling of inputs */
+    .prog-wrapper {
+      margin-top: 0.5em;
+      padding: 0.6em;
+      border-radius: 8px;
+      background-color: #f4f6fa;
+      font-size: 0.85em;
+      text-align: left;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    /* Styling for labels inside the progressive dosage control section, including spacing and font weight */
+    .prog-wrapper label {
+      margin-bottom: 0.2em;
+      font-weight: 500;
+    }
+
+    /* Adds spacing between the checkbox and its label within the progressive dosage control section */
+    .prog-wrapper input[type="checkbox"] {
+      margin-right: 0.4em;
+    }
+
+    /* Styles the container for the progressive dosage input controls, adding spacing and a top border */
+    .prog-controls {
+      margin-top: 0.5em;
+      padding-top: 0.5em;
+      border-top: 1px solid #ccc;
+    }
+
+    .prog-controls label,
+    .prog-controls input {
+      display: block;
+      margin-top: 0.4em;
+    }
+
     .prog-row {
-  display: flex;
-  gap: 1em;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-top: 0.5em;
-}
-
-.prog-row label {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.85em;
-}
-
-.prog-row input[type="number"] {
-  width: 4em;
-  margin-top: 0.2em;
-}
-
-      td > div {
-    text-align: left; /* override the default 'center' for nested content */
+      display: flex;
+      gap: 1em;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 0.5em;
     }
-  
+
+    .prog-row input[type="number"] {
+      width: 4em;
+      margin-top: 0.2em;
+    }
+
     @media (max-width: 600px) {
       h1 {
         font-size: 1.4em;
+        padding: 0.5em 0;
       }
+      
       th, td {
-        padding: 0.7em;
-        font-size: 0.95em;
+        padding: 0.5em;
+        font-size: 0.9em;
+      }
+
+      .commit-button {
+        width: 100%;
+        padding: 0.6em;
+        font-size: 1em;
+      }
+
+      input[type="number"] {
+        width: 3.5em;
+      }
+
+      .prog-wrapper {
+        font-size: 0.8em;
+        padding: 0.5em;
+      }
+
+      .prog-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5em;
       }
     }
-
-    .prog-wrapper {
-  margin-top: 0.5em;
-  padding: 0.6em;
-  border-radius: 8px;
-  background-color: #f4f6fa;
-  font-size: 0.85em;
-  text-align: left;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-.prog-wrapper label {
-  margin-bottom: 0.2em;
-  font-weight: 500;
-}
-
-.prog-wrapper input[type="checkbox"] {
-  margin-right: 0.4em;
-}
-
-.prog-controls {
-  margin-top: 0.5em;
-  padding-top: 0.5em;
-  border-top: 1px solid #ccc;
-}
-
-.prog-controls label,
-.prog-controls input {
-  display: block;
-  margin-top: 0.4em;
-}
-
-.prog-controls input[type="number"] {
-  margin-left: 0.5em;
-}
 
   </style>
 </head>
 
-  
 <body>
+  <!-- HEADER -->
   <h1>Daily Medication Tracker</h1>
   <div class="note" id="dateDisplay"></div>
 
+  <!-- MEDICATION TABLE -->
   <div class="table-wrapper">
     <table id="medTable">
       <thead>
@@ -183,268 +294,268 @@
           <th class="morning">Morning Dose</th>
           <th class="evening">Evening Dose</th>
           <th>Amend Dosage</th>
+          <th>Progressive Options</th>
         </tr>
       </thead>
       <tbody>
+        <!-- Static medication entries -->
+        <!-- Add more here if needed -->
+        <!-- TODO: Make medication list dynamic in future -->
+        <!-- Placeholder: Dynamic medication loading via Firebase -->
+
+        <!-- Example Row: Estilsona -->
         <tr data-med="Estilsona">
-          <td>Estilsona</td>
-          <td class="morning">4 ml</td>
-          <td class="evening">—</td>
-          <td><input type="number" step="0.1" min="0" max="10" /></td>
-        </tr>
+        <td>Estilsona (progressive)</td>
+        <td class="morning" id="progDoseEstilsonaMorning">4.0 ml</td>
+        <td class="evening" id="progDoseEstilsonaEvening">—</td>
+        <td>
+          <input type="number" step="0.1" min="0" max="10" />
+        </td>
+        <td>
+          <div class="prog-wrapper">
+            <label>
+              <input type="checkbox" class="prog-toggle" /> Progressive
+            </label>
+            <div class="prog-controls" style="display: none;">
+                <div class="prog-row">
+                <label>Increment: 
+                  <input type="number" class="prog-increment" step="0.1" min="-1" max="1" />
+                </label>
+                <label>Every (days): 
+                  <input type="number" class="prog-interval" min="1" max="30" />
+                </label>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+
         <tr data-med="Depakine">
           <td>Depakine</td>
           <td class="morning">1.7 ml</td>
           <td class="evening">1.7 ml</td>
           <td><input type="number" step="0.1" min="0" max="10" /></td>
         </tr>
+
         <tr data-med="Omeprazole">
           <td>Omeprazole</td>
-          <td class="morning">4 ml</td>
+          <td class="morning">4.0 ml</td>
           <td class="evening">—</td>
           <td><input type="number" step="0.1" min="0" max="10" /></td>
         </tr>
+
         <tr data-med="Vitamin D">
           <td>Vitamin D</td>
           <td class="morning">0.2 ml</td>
           <td class="evening">—</td>
           <td><input type="number" step="0.1" min="0" max="10" /></td>
         </tr>
-        <tr data-med="CBD">
-          <td>CBD (progressive)</td>
-          <td class="morning" id="progDoseMorning">Calculating...</td>
-          <td class="evening" id="progDoseEvening">Calculating...</td>
-          <td><input type="number" step="0.1" min="0" max="10" />
-              <div class="prog-wrapper">
-              <label>
-              <input type="checkbox" class="prog-toggle" />
-              Progressive
-              </label>
-              <div class="prog-controls" style="display: none;">
-  <div class="prog-row">
-    <label>
-      Increment:
-      <input type="number" class="prog-increment" step="0.1" min="0.1" max="10" />
-    </label>
-    <label>
-      Every (days):
-      <input type="number" class="prog-interval" min="1" max="30" />
-    </label>
-  </div>
-</div>
+        <!-- More medication rows (Depakine, Omeprazole, etc.)... -->
 
+        <!-- Special Case: CBD (progressive dosing) -->
+       <tr data-med="CBD">
+        <td>CBD (progressive)</td>
+        <td class="morning" id="progDoseCBDMorning">Calculating...</td>
+        <td class="evening" id="progDoseCBDEvening">Calculating...</td>
+        <td>
+          <input type="number" step="0.1" min="0" max="10" />
+        </td>
+        <td>
+          <div class="prog-wrapper">
+            <label>
+              <input type="checkbox" class="prog-toggle" /> Progressive
+            </label>
+            <div class="prog-controls" style="display: none;">
+              <div class="prog-row">
+                <label>
+                  Increment: <input type="number" class="prog-increment" step="0.1" min="0.1" max="10" />
+                </label>
+                <label>
+                  Every (days): <input type="number" class="prog-interval" min="1" max="30" />
+                </label>
+              </div>
             </div>
-          </td>
-        </tr>
+          </div>
+        </td>
+      </tr>
+        
       </tbody>
     </table>
   </div>
 
+  <!-- COMMIT BUTTON -->
   <button class="commit-button" onclick="commitAmendments()">Commit</button>
 
+  <!-- ============================ -->
+  <!--         SCRIPT (JS)          -->
+  <!-- ============================ -->
   <script>
-    let cbdProgressiveConfig = null;
+    // Firebase DB reference
     const today = new Date();
     document.getElementById("dateDisplay").innerText = "Today is: " + today.toDateString();
 
-    // Initial CBD progressive dosage calculation
+    let cbdProgressiveConfig = null;
     let cbdBaseDose = 0.1;
-    const cbdStartDate = new Date("2025-03-27");
-    const doseStep = 0.1;
-    const intervalDays = 4;
 
     function calculateCBDDose() {
-  if (!cbdProgressiveConfig) {
-    // fallback to default logic
-    const startDate = new Date("2025-03-27");
-    const base = 0.1;
-    const interval = 4;
-    const daysElapsed = Math.floor((today - startDate) / (1000 * 3600 * 24));
-    const steps = Math.floor(daysElapsed / interval);
-    const currentDose = base + steps * 0.1;
-    const text = currentDose.toFixed(1) + " ml";
-    document.getElementById("progDoseMorning").innerText = text;
-    document.getElementById("progDoseEvening").innerText = text;
-    return;
-  }
-  const { baseDose, increment, intervalValue, startDate } = cbdProgressiveConfig;
-  const elapsedDays = Math.floor((Date.now() - startDate) / (1000 * 60 * 60 * 24));
-  const steps = Math.floor(elapsedDays / intervalValue);
-  const currentDose = baseDose + (steps * increment);
-  const text = currentDose.toFixed(1) + " ml";
-  document.getElementById("progDoseMorning").innerText = text;
-  document.getElementById("progDoseEvening").innerText = text;
-}
- 
-    calculateCBDDose();
+      // If there's no CBD progressive config, calculate from default
+      if (!cbdProgressiveConfig) {
+        const startDate = new Date("2025-03-27");
+        const daysElapsed = Math.floor((today - startDate) / (1000 * 3600 * 24));
+        const steps = Math.floor(daysElapsed / 4);
+        const currentDose = 0.1 + steps * 0.1;
+        document.getElementById("progDoseMorning").innerText = currentDose.toFixed(1) + " ml";
+        document.getElementById("progDoseEvening").innerText = currentDose.toFixed(1) + " ml";
+        return;
+      }
 
-function commitAmendments() {
-  const rows = document.querySelectorAll("#medTable tbody tr");
+      // Use baseDose from the progressive config, which is updated from Firebase
+      const { baseDose, increment, intervalValue, startDate } = cbdProgressiveConfig;
+  
+      // Calculate the number of days passed since the startDate
+      const elapsedDays = Math.floor((Date.now() - startDate) / (1000 * 60 * 60 * 24));
+      const steps = Math.floor(elapsedDays / intervalValue);
+  
+      // Calculate the current dose based on the base dose and steps
+      const currentDose = baseDose + (steps * increment);
+      const text = currentDose.toFixed(1) + " ml";
 
-  rows.forEach(row => {
-    const input = row.querySelector("input[type='number']");
-    const newValue = parseFloat(input.value);
-    const isCBD = row.dataset.med === "CBD";
-
-    // Remove previous error styling
-    input.classList.remove("invalid");
-
-    // Validate input
-    const isValid = !isNaN(newValue) && newValue >= 0 && newValue <= 10 && (Math.round(newValue * 10) % 1 === 0);
-
-    if (!isValid && input.value !== "") {
-      input.classList.add("invalid");
-      return;
+      // Update the UI with the calculated dose
+      document.getElementById("progDoseMorning").innerText = text;
+      document.getElementById("progDoseEvening").innerText = text;
     }
 
-    if (isValid) {
-  const formatted = newValue.toFixed(1) + " ml";
-  const morningCell = row.querySelector(".morning");
-  const eveningCell = row.querySelector(".evening");
 
-  // update UI cells
-  if (eveningCell.innerText.trim() === "—" || eveningCell.innerText.trim() === "") {
-    morningCell.innerText = formatted;
-  } else {
-    morningCell.innerText = formatted;
-    eveningCell.innerText = formatted;
-  }
+    function commitAmendments() {
+      const rows = document.querySelectorAll("#medTable tbody tr");
 
-  // special logic for CBD
-  if (isCBD) {
-    cbdBaseDose = newValue;
+      rows.forEach(row => {
+        const input = row.querySelector("input[type='number']");
+        const newValue = parseFloat(input.value);
+        const isCBD = row.dataset.med === "CBD";
+        input.classList.remove("invalid");
 
-    const progToggle = row.querySelector(".prog-toggle");
-    const incrementInput = row.querySelector(".prog-increment");
-    const intervalInput = row.querySelector(".prog-interval");
-    const increment = parseFloat(incrementInput.value);
-    const intervalValue = parseInt(intervalInput.value);
+        const isValid = !isNaN(newValue) && newValue >= 0 && newValue <= 10 && (Math.round(newValue * 10) % 1 === 0);
+        if (!isValid && input.value !== "") {
+          input.classList.add("invalid");
+          return;
+        }
 
-    if (!isNaN(increment) && !isNaN(intervalValue)) {
-      cbdProgressiveConfig = {
-        baseDose: newValue,
-        increment,
-        intervalValue,
-        startDate: Date.now()
-      };
-    } else {
-      cbdProgressiveConfig = {
-        baseDose: newValue,
-        increment: 0,
-        intervalValue: 1,
-        startDate: Date.now()
-      };
+        if (isValid) {
+          const formatted = newValue.toFixed(1) + " ml";
+          const morningCell = row.querySelector(".morning");
+          const eveningCell = row.querySelector(".evening");
+
+          if (eveningCell.innerText.trim() === "—" || eveningCell.innerText.trim() === "") {
+            morningCell.innerText = formatted;
+          } else {
+            morningCell.innerText = formatted;
+            eveningCell.innerText = formatted;
+          }
+
+          const medName = row.dataset.med;
+          const medData = { morning: morningCell.innerText, evening: eveningCell.innerText };
+
+          if (isCBD) {
+            const progToggle = row.querySelector(".prog-toggle");
+            const incrementInput = row.querySelector(".prog-increment");
+            const intervalInput = row.querySelector(".prog-interval");
+            const increment = parseFloat(incrementInput.value);
+            const intervalValue = parseInt(intervalInput.value);
+
+            if (!isNaN(increment) && !isNaN(intervalValue)) {
+              cbdProgressiveConfig = { baseDose: newValue, increment, intervalValue, startDate: Date.now() };
+            } else {
+              cbdProgressiveConfig = { baseDose: newValue, increment: 0, intervalValue: 1, startDate: Date.now() };
+            }
+
+            calculateCBDDose();
+            medData.baseDose = newValue;
+            medData.progressive = progToggle.checked;
+            medData.increment = incrementInput?.value || null;
+            medData.interval = intervalInput?.value || null;
+            medData.startDate = new Date().toISOString();
+          }
+
+          database.ref('medications/' + medName).set(medData);
+          input.value = "";
+        }
+      });
     }
 
-    calculateCBDDose();
-
-    // ✅ Save to Firebase
-    database.ref('medications/CBD').set({
-      morning: morningCell.innerText,
-      evening: eveningCell.innerText,
-      baseDose: cbdBaseDose,
-      progressive: progToggle.checked,
-      increment: incrementInput?.value || null,
-      interval: intervalInput?.value || null,
-      startDate: new Date().toISOString()
+    // Toggle progressive input visibility
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".prog-toggle").forEach(toggle => {
+        toggle.addEventListener("change", () => {
+          const controls = toggle.closest("td").querySelector(".prog-controls");
+          controls.style.display = toggle.checked ? "block" : "none";
+        });
+      });
     });
-
-    console.log("✅ Written to Firebase!");
-  }
-
-  input.value = "";
-
-
-// Save every medication (not just CBD)
-const medName = row.dataset.med;
-const medData = {
-  morning: morningCell.innerText,
-  evening: eveningCell.innerText,
-};
-
-if (isCBD) {
-  medData.baseDose = cbdBaseDose;
-  medData.progressive = progToggle.checked;
-  medData.increment = incrementInput?.value || null;
-  medData.interval = intervalInput?.value || null;
-  medData.startDate = new Date().toISOString();
-}
-
-database.ref('medications/' + medName).set(medData);
-}
-
-  });
-
-}    
-   document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".prog-toggle").forEach(toggle => {
-    toggle.addEventListener("change", () => {
-      const controls = toggle.closest("td").querySelector(".prog-controls");
-      controls.style.display = toggle.checked ? "block" : "none";
-    });
-  });
-});
-
-
   </script>
 
+  <!-- ============================ -->
+  <!--      FIREBASE INIT + FETCH   -->
+  <!-- ============================ -->
   <script>
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyBh7B7zxl3EQ1p7lrnAzsPerrwPfytZzpk",
-    authDomain: "med-dosage.firebaseapp.com",
-    databaseURL: "https://med-dosage-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "med-dosage",
-    storageBucket: "med-dosage.appspot.com",
-    messagingSenderId: "598118703351",
-    appId: "1:598118703351:web:f2ff4bc51fca900b08f3f2",
-    measurementId: "G-NH9Q0HQV2Y"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyBh7B7zxl3EQ1p7lrnAzsPerrwPfytZzpk",
+      authDomain: "med-dosage.firebaseapp.com",
+      databaseURL: "https://med-dosage-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "med-dosage",
+      storageBucket: "med-dosage.appspot.com",
+      messagingSenderId: "598118703351",
+      appId: "1:598118703351:web:f2ff4bc51fca900b08f3f2",
+      measurementId: "G-NH9Q0HQV2Y"
+    };
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
     document.addEventListener("DOMContentLoaded", () => {
-  // Existing event listener setup...
-  
-  // Fetch and apply CBD data from Firebase
-database.ref('medications').once('value').then(snapshot => {
-  const data = snapshot.val();
-  if (!data) return;
+      database.ref('medications').once('value').then(snapshot => {
+        const data = snapshot.val();
+        console.log(data); // Log the data to see what you're receiving
+        if (!data) return;
 
-  Object.keys(data).forEach(med => {
-    const medRow = document.querySelector(`tr[data-med="${med}"]`);
-    if (!medRow) return;
+        Object.keys(data).forEach(med => {
+          const medRow = document.querySelector(`tr[data-med="${med}"]`);
+          if (!medRow) return;
 
-    const morningCell = medRow.querySelector('.morning');
-    const eveningCell = medRow.querySelector('.evening');
-    morningCell.innerText = data[med].morning || "—";
-    eveningCell.innerText = data[med].evening || "—";
+          const morningCell = medRow.querySelector('.morning');
+          const eveningCell = medRow.querySelector('.evening');
+          morningCell.innerText = data[med].morning || "—";
+          eveningCell.innerText = data[med].evening || "—";
 
-    // If CBD, restore advanced options too
-    if (med === "CBD") {
-  const progToggle = medRow.querySelector(".prog-toggle");
-  const incrementInput = medRow.querySelector(".prog-increment");
-  const intervalInput = medRow.querySelector(".prog-interval");
-  const controls = medRow.querySelector(".prog-controls");
+          if (med === "CBD") {
+            console.log('CBD Data:', data[med]); // Log CBD specific data
+            const progToggle = medRow.querySelector(".prog-toggle");
+            const incrementInput = medRow.querySelector(".prog-increment");
+            const intervalInput = medRow.querySelector(".prog-interval");
+            const controls = medRow.querySelector(".prog-controls");
 
-  // Always start untoggled and blank
-  progToggle.checked = false;
-  incrementInput.value = "";
-  intervalInput.value = "";
-  controls.style.display = "none";
+            // Reset progressive UI elements on load
+            progToggle.checked = false;
+            incrementInput.value = "";
+            intervalInput.value = "";
+            controls.style.display = "none";
 
-  // Populate dosage fields only
-  cbdProgressiveConfig = null; // Reset any prior progressive settings
-  calculateCBDDose();
-}
+            // Update the progressive dosing configuration
+            cbdProgressiveConfig = {
+            baseDose: data[med].baseDose || 0.1,  // Default to 0.1 if not present
+            increment: data[med].increment || 0.1,
+            intervalValue: data[med].interval || 4,
+            startDate: new Date(data[med].startDate).getTime(),
+            };
 
-  });
-});
+          console.log('CBD Progressive Config:', cbdProgressiveConfig); // Log the config
 
-});
-
-</script>
+          // Recalculate the CBD dose based on the data retrieved
+          calculateCBDDose();
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>
