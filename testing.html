@@ -576,7 +576,7 @@
           if (daysElapsed >= 0) {
             dose += steps * config.increment;
           }
-          dose = math.max(dose, 0);
+          dose = Math.max(dose, 0);
           series.push(parseFloat(dose.toFixed(1)));
         }
         return series;
