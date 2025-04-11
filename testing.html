@@ -569,25 +569,32 @@
        */
       function computeProgressiveSeries(config, daysToCompute = 30) {
         const series = [];
-        const today = new Date();
+        
+        // Normalize today's date to midnight.
+        const current = new Date();
+        current.setHours(0, 0, 0, 0);
+
+        // Parse and normalize the start date to midnight.
+        const startDate = new Date(config.startDate);
+        startDate.setHours(0, 0, 0, 0);
 
         for (let i = 0; i <= daysToCompute; i++) {
-          const futureDate = new Date(today);
+          // Set futureDate to the current date plus i days.
+          const futureDate = new Date(current);
           futureDate.setDate(today.getDate() + i);
 
-          // Calculate days elapsed since the medication's start date.
-          const daysElapsed = Math.floor(
-            (futureDate.getTime() -
-              new Date(config.startDate).getTime()) /
-              (1000 * 60 * 60 * 24)
-          );
+          // Calculate the number of full calendar days elapsed since the start date.
+          const daysElapsed = Math.floor((futureDate - startDate) / (1000 * 60 * 60 * 24));
+
+          // Determine how many times the increment is applied.
           const steps = Math.floor(daysElapsed / config.interval);
 
-          // Calculate the predicted dose.
+          // Compute the dose based on the base dose plus increments.
           let dose = config.baseDose;
           if (daysElapsed >= 0) {
             dose += steps * config.increment;
           }
+          // Ensure the dose never falls below zero.
           dose = Math.max(dose, 0);
           series.push(parseFloat(dose.toFixed(1)));
         }
