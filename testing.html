@@ -468,7 +468,7 @@ function commitAmendments() {
           medData.baseDose = newValue;
           medData.increment = incrementValue;
           medData.interval = intervalValue;
-          medData.startDate = new Date().toISOString();
+          medData.startDate = startDateValue; // Use the computed value!
         }
       }
     }
