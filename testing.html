@@ -693,6 +693,23 @@ function commitAmendments() {
               morningCell.innerText = data[med].morning || "—";
               eveningCell.innerText = data[med].evening || "—";
 
+              // ----- NEW CODE for Previous Dose -----
+              const historyCell = medRow.querySelector(".previous-dose");
+              if (data[med].history && data[med].history.length > 0) {
+                // Get the last recorded history record.
+                const lastHistory = data[med].history[data[med].history.length - 1];
+                if (historyCell) {
+                  // Display the previous dose (for example, showing the morning dosage recorded previously)
+                  historyCell.innerText = lastHistory.morning;
+                }
+              } else {
+                // No history available, ensure the cell shows the default.
+                if (historyCell) {
+                  historyCell.innerText = "—";
+                }
+              }
+              // ----------------------------------------
+
               // Handle progressive options if present.
               const progToggle = medRow.querySelector("td:nth-child(6) .prog-toggle");
               if (progToggle && data[med].progressive) {
