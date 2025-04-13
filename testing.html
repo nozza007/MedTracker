@@ -579,16 +579,16 @@ function commitAmendments() {
 
               // Handle progressive options if present.
               const progToggle = medRow.querySelector(
-                "td:nth-child(5) .prog-toggle"
+                "td:nth-child(6) .prog-toggle"
               );
               if (progToggle && data[med].progressive) {
                 progToggle.checked = true;
 
                 const incrementInput = medRow.querySelector(
-                  "td:nth-child(5) .prog-increment"
+                  "td:nth-child(6) .prog-increment"
                 );
                 const intervalInput = medRow.querySelector(
-                  "td:nth-child(5) .prog-interval"
+                  "td:nth-child(6) .prog-interval"
                 );
                 if (incrementInput)
                   incrementInput.value = data[med].increment || "";
@@ -596,7 +596,7 @@ function commitAmendments() {
                   intervalInput.value = data[med].interval || "";
 
                 // Display progressive controls by default.
-                const controls = medRow.querySelector("td:nth-child(5) .prog-controls");
+                const controls = medRow.querySelector("td:nth-child(6) .prog-controls");
                 if (controls) {
                   controls.style.display = "block";
                 }
