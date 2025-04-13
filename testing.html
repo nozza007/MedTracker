@@ -266,6 +266,7 @@
             <th>Medication</th>
             <th class="morning">Morning Dose</th>
             <th class="evening">Evening Dose</th>
+            <th class="previous-dose-header" style="color:#888; font-size:0.85em;">Previous Dose</th>
             <th>Amend Dosage</th>
             <th>Progressive Options</th>
           </tr>
@@ -276,6 +277,7 @@
             <td>Estilsona</td>
             <td class="morning" id="progDoseEstilsonaMorning">Calculating...</td>
             <td class="evening" id="progDoseEstilsonaEvening">—</td>
+            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
             <td>
               <input type="number" step="0.1" min="0" max="10" />
             </td>
@@ -305,6 +307,7 @@
             <td>Depakine</td>
             <td class="morning">Calculating...</td>
             <td class="evening">Calculating...</td>
+            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
             <td><input type="number" step="0.1" min="0" max="10" /></td>
             <td></td>
           </tr>
@@ -314,6 +317,7 @@
             <td>Omeprazole</td>
             <td class="morning">Calculating...</td>
             <td class="evening">—</td>
+            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
             <td><input type="number" step="0.1" min="0" max="10" /></td>
             <td></td>
           </tr>
@@ -323,6 +327,7 @@
             <td>Vitamin D</td>
             <td class="morning">Calculating...</td>
             <td class="evening">—</td>
+            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
             <td><input type="number" step="0.1" min="0" max="10" /></td>
             <td></td>
           </tr>
@@ -332,6 +337,7 @@
             <td>CBD</td>
             <td class="morning" id="progDoseCBDMorning">Calculating...</td>
             <td class="evening" id="progDoseCBDEvening">Calculating...</td>
+            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
             <td>
               <input type="number" step="0.1" min="0" max="10" />
             </td>
@@ -361,6 +367,7 @@
             <td>Clobazam</td>
             <td class="morning">1 Drop</td>
             <td class="evening">1 Drop</td>
+            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
             <td><input type="number" step="0.1" min="0" max="10" /></td>
             <td></td>
           </tr>
@@ -390,84 +397,128 @@
        * It loops through each medication row, validates input,
        * updates the displayed doses, and writes the changes to Firebase.
        */
-      function commitAmendments() {
-        const rows = document.querySelectorAll("#medTable tbody tr");
+function commitAmendments() {
+  const rows = document.querySelectorAll("#medTable tbody tr");
 
-        rows.forEach((row) => {
-          const input = row.querySelector("td:nth-child(4) input[type='number']");
-          const medName = row.dataset.med;
-          const newValue = parseFloat(input.value);
-          input.classList.remove("invalid");
+  rows.forEach((row) => {
+    const input = row.querySelector("td:nth-child(5) input[type='number']");
+    const medName = row.dataset.med;
+    const newValue = parseFloat(input.value);
+    input.classList.remove("invalid");
 
-          // Validate the input value.
-          const isValid =
-            !isNaN(newValue) &&
-            newValue >= 0 &&
-            newValue <= 10 &&
-            Math.round(newValue * 10) % 1 === 0;
-          if (!isValid && input.value !== "") {
-            input.classList.add("invalid");
-            return;
-          }
+    // Validate the input value.
+    const isValid =
+      !isNaN(newValue) &&
+      newValue >= 0 &&
+      newValue <= 10 &&
+      Math.round(newValue * 10) % 1 === 0;
+    if (!isValid && input.value !== "") {
+      input.classList.add("invalid");
+      return;
+    }
 
-          // Update dose display cells.
-          const morningCell = row.querySelector(".morning");
-          const eveningCell = row.querySelector(".evening");
-          if (isValid) {
-            // Use a conditional: if medName is Clobazam, use " drops" instead of " ml"
-            const unit = medName === "Clobazam" ? " drops" : " ml";
-            const formatted = newValue.toFixed(1) + unit;
-            if (
-              eveningCell.innerText.trim() === "—" ||
-              eveningCell.innerText.trim() === ""
-            ) {
-              morningCell.innerText = formatted;
-            } else {
-              morningCell.innerText = formatted;
-              eveningCell.innerText = formatted;
-            }
-          }
-
-          // Prepare medication data for Firebase update.
-          const medData = {
-            morning: morningCell.innerText,
-            evening: eveningCell.innerText,
-          };
-
-          // Check and capture progressive options (located in the 5th column).
-          const progToggle = row.querySelector("td:nth-child(5) .prog-toggle");
-          if (progToggle) {
-            const isProgressive = progToggle.checked;
-            medData.progressive = isProgressive;
-
-            if (isProgressive) {
-              const incrementInput = row.querySelector(
-                "td:nth-child(5) .prog-increment"
-              );
-              const intervalInput = row.querySelector(
-                "td:nth-child(5) .prog-interval"
-              );
-
-              const incrementValue = parseFloat(incrementInput.value);
-              const intervalValue = parseInt(intervalInput.value, 10);
-
-              // Update progressive data only if inputs are valid.
-              if (!isNaN(incrementValue) && !isNaN(intervalValue)) {
-                medData.baseDose = newValue;
-                medData.increment = incrementValue;
-                medData.interval = intervalValue;
-                medData.startDate = new Date().toISOString();
-              }
-            }
-          }
-
-          // Write the updated medication data to Firebase.
-          database.ref("medications/" + medName).set(medData);
-
-          // Clear the amendment input.
-          input.value = "";
-        });
+    // Update dose display cells.
+    const morningCell = row.querySelector(".morning");
+    const eveningCell = row.querySelector(".evening");
+    if (isValid) {
+      const unit = medName === "Clobazam" ? " drops" : " ml";
+      const formatted = newValue.toFixed(1) + unit;
+      // When only one dosage cell is used, update morningCell.
+      // Otherwise update both if appropriate.
+      if (eveningCell.innerText.trim() === "—" || eveningCell.innerText.trim() === "") {
+        morningCell.innerText = formatted;
+      } else {
+        morningCell.innerText = formatted;
+        eveningCell.innerText = formatted;
       }
+    }
+
+    // Prepare the new medication data.
+    const medData = {
+      morning: morningCell.innerText,
+      evening: eveningCell.innerText,
+    };
+
+    // Handle progressive options if set.
+    const progToggle = row.querySelector("td:nth-child(6) .prog-toggle");
+    if (progToggle) {
+      const isProgressive = progToggle.checked;
+      medData.progressive = isProgressive;
+      if (isProgressive) {
+        const incrementInput = row.querySelector("td:nth-child(6) .prog-increment");
+        const intervalInput = row.querySelector("td:nth-child(6) .prog-interval");
+        const incrementValue = parseFloat(incrementInput.value);
+        const intervalValue = parseInt(intervalInput.value, 10);
+        if (!isNaN(incrementValue) && !isNaN(intervalValue)) {
+          medData.baseDose = newValue;
+          medData.increment = incrementValue;
+          medData.interval = intervalValue;
+          medData.startDate = new Date().toISOString();
+        }
+      }
+    }
+
+    // Identify the cell for previous dose display.
+    const historyCell = row.querySelector(".previous-dose");
+
+    // Use a Firebase transaction to update the medication record
+    const medRef = database.ref("medications/" + medName);
+    medRef.transaction((currentData) => {
+      // Initialize if no current data exists.
+      if (currentData === null) {
+        currentData = {};
+      }
+      
+      // Create a history record only if the current dose has been set
+      if (
+        currentData.morning &&
+        currentData.morning !== "Calculating..."
+      ) {
+        const historyRecord = {
+          timestamp: new Date().toISOString(),
+          morning: currentData.morning,
+          evening: currentData.evening || "—"
+        };
+
+        if (!currentData.history) {
+          currentData.history = [];
+        }
+        // Append the history record.
+        currentData.history.push(historyRecord);
+
+        // Update the UI to show the previous (most recent) dose.
+        // For a richer display, you might show both morning and evening values.
+        if (historyCell) {
+          historyCell.innerText = historyRecord.morning;
+        }
+      }
+
+      // Merge the new dose data into the record.
+      currentData.morning = medData.morning;
+      currentData.evening = medData.evening;
+      
+      // Include progressive settings if applicable.
+      if (medData.progressive) {
+        currentData.progressive = medData.progressive;
+        currentData.baseDose = medData.baseDose;
+        currentData.increment = medData.increment;
+        currentData.interval = medData.interval;
+        currentData.startDate = medData.startDate;
+      } else {
+        // Remove progressive settings if they were previously set and now disabled.
+        delete currentData.progressive;
+        delete currentData.baseDose;
+        delete currentData.increment;
+        delete currentData.interval;
+        delete currentData.startDate;
+      }
+      return currentData;
+    });
+
+    // Clear the amendment input for future updates.
+    input.value = "";
+  });
+}
 
       /**
        * Toggle visibility of progressive input controls based on checkbox state.
