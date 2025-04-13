@@ -452,8 +452,13 @@ function commitAmendments() {
       if (isProgressive) {
         const incrementInput = row.querySelector("td:nth-child(6) .prog-increment");
         const intervalInput = row.querySelector("td:nth-child(6) .prog-interval");
+        const startDateInput = row.querySelector("td:nth-child(6) .prog-startDate");
         const incrementValue = parseFloat(incrementInput.value);
         const intervalValue = parseInt(intervalInput.value, 10);
+        // Use the start date from the input if provided; otherwise, fallback to today's date.
+        const startDateValue = startDateInput && startDateInput.value
+        ? new Date(startDateInput.value).toISOString()
+        : new Date().toISOString();
         if (!isNaN(incrementValue) && !isNaN(intervalValue)) {
           medData.baseDose = newValue;
           medData.increment = incrementValue;
@@ -583,29 +588,31 @@ function commitAmendments() {
               eveningCell.innerText = data[med].evening || "—";
 
               // Handle progressive options if present.
-              const progToggle = medRow.querySelector(
-                "td:nth-child(6) .prog-toggle"
-              );
+              const progToggle = medRow.querySelector("td:nth-child(6) .prog-toggle");
               if (progToggle && data[med].progressive) {
                 progToggle.checked = true;
-
-                const incrementInput = medRow.querySelector(
-                  "td:nth-child(6) .prog-increment"
-                );
-                const intervalInput = medRow.querySelector(
-                  "td:nth-child(6) .prog-interval"
-                );
+                const incrementInput = medRow.querySelector("td:nth-child(6) .prog-increment");
+                const intervalInput = medRow.querySelector("td:nth-child(6) .prog-interval");
+                const startDateInput = medRow.querySelector("td:nth-child(6) .prog-startDate");
                 if (incrementInput)
                   incrementInput.value = data[med].increment || "";
                 if (intervalInput)
                   intervalInput.value = data[med].interval || "";
-
+                // If a start date exists, set the date input to that date,
+                // formatting it to YYYY-MM-DD; otherwise, default to today.
+                if (startDateInput) {
+                  if (data[med].startDate) {
+                    startDateInput.value = new Date(data[med].startDate).toISOString().split("T")[0];
+                  } else {
+                    startDateInput.value = new Date().toISOString().split("T")[0];
+                  }
+                }
                 // Display progressive controls by default.
                 const controls = medRow.querySelector("td:nth-child(6) .prog-controls");
                 if (controls) {
                   controls.style.display = "block";
                 }
-
+                
                 // Save the progressive configuration for charting if valid.
                 if (data[med].startDate) {
                   progressiveMeds.push({
@@ -621,6 +628,15 @@ function commitAmendments() {
               }
             });
 
+            document.addEventListener("DOMContentLoaded", () => {
+              // For each date input in progressive options that is empty, set its value to today's date.
+              document.querySelectorAll('.prog-startDate').forEach((input) => {
+                if (!input.value) {
+                  input.value = new Date().toISOString().split("T")[0];
+                }
+              });
+            });
+            
             // Build the chart if there are any progressive medications.
             if (progressiveMeds.length) {
               buildProgressiveChart(progressiveMeds);
@@ -700,6 +716,8 @@ function commitAmendments() {
             fill: false,
           };
         });
+
+        
 
         // Get chart canvas context and render the chart.
         const ctx = document.getElementById('progressiveChart').getContext('2d');
