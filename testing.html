@@ -401,7 +401,7 @@ function commitAmendments() {
   const rows = document.querySelectorAll("#medTable tbody tr");
 
   rows.forEach((row) => {
-    const input = row.querySelector("td:nth-child(5) input[type='number']");
+    const input = row.querySelector("td:nth-child(6) input[type='number']");
     const medName = row.dataset.med;
     const newValue = parseFloat(input.value);
     input.classList.remove("invalid");
