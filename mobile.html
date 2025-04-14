@@ -266,16 +266,19 @@
             <th>Medication</th>
             <th class="morning">Morning Dose</th>
             <th class="evening">Evening Dose</th>
+            <th class="previous-dose-header" style="color:#888; font-size:0.85em;">Previous Dose</th>
             <th>Amend Dosage</th>
             <th>Progressive Options</th>
           </tr>
         </thead>
         <tbody>
+          
           <!-- Example Row: Estilsona -->
           <tr data-med="Estilsona">
             <td>Estilsona</td>
             <td class="morning" id="progDoseEstilsonaMorning">Calculating...</td>
             <td class="evening" id="progDoseEstilsonaEvening">—</td>
+            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
             <td>
               <input type="number" step="0.1" min="0" max="10" />
             </td>
@@ -294,6 +297,46 @@
                       Every (days):
                       <input type="number" class="prog-interval" min="1" max="30" />
                     </label>
+                    <label>
+                      Start Date:
+                      <!-- The date input defaults to today's date (set in JS later) -->
+                      <input type="date" class="prog-startDate" />
+                  </label>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Example Row: Omeprizol -->
+          <tr data-med="Omeprizol">
+            <td>Omeprizol</td>
+            <td class="morning" id="progDoseOmeprizolMorning">Calculating...</td>
+            <td class="evening" id="progDoseOmeprizolEvening">—</td>
+            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
+            <td>
+              <input type="number" step="0.1" min="0" max="10" />
+            </td>
+            <td>
+              <div class="prog-wrapper">
+                <label>
+                  <input type="checkbox" class="prog-toggle" /> Progressive
+                </label>
+                <div class="prog-controls" style="display: none;">
+                  <div class="prog-row">
+                    <label>
+                      Increment:
+                      <input type="number" class="prog-increment" step="0.1" min="-1" max="1" />
+                    </label>
+                    <label>
+                      Every (days):
+                      <input type="number" class="prog-interval" min="1" max="30" />
+                    </label>
+                    <label>
+                      Start Date:
+                      <!-- The date input defaults to today's date (set in JS later) -->
+                      <input type="date" class="prog-startDate" />
+                  </label>
                   </div>
                 </div>
               </div>
@@ -303,28 +346,71 @@
           <!-- Example Row: Depakine -->
           <tr data-med="Depakine">
             <td>Depakine</td>
-            <td class="morning">Calculating...</td>
-            <td class="evening">Calculating...</td>
-            <td><input type="number" step="0.1" min="0" max="10" /></td>
-            <td></td>
-          </tr>
-
-          <!-- Example Row: Omeprazole -->
-          <tr data-med="Omeprazole">
-            <td>Omeprazole</td>
-            <td class="morning">Calculating...</td>
-            <td class="evening">—</td>
-            <td><input type="number" step="0.1" min="0" max="10" /></td>
-            <td></td>
+            <td class="morning" id="progDoseDepakineMorning">Calculating...</td>
+            <td class="evening" id="progDoseDepakineEvening">Calculating...</td>
+            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
+            <td>
+              <input type="number" step="0.1" min="0" max="10" />
+            </td>
+            <td>
+              <div class="prog-wrapper">
+                <label>
+                  <input type="checkbox" class="prog-toggle" /> Progressive
+                </label>
+                <div class="prog-controls" style="display: none;">
+                  <div class="prog-row">
+                    <label>
+                      Increment:
+                      <input type="number" class="prog-increment" step="0.1" min="-1" max="1" />
+                    </label>
+                    <label>
+                      Every (days):
+                      <input type="number" class="prog-interval" min="1" max="30" />
+                    </label>
+                    <label>
+                      Start Date:
+                      <!-- The date input defaults to today's date (set in JS later) -->
+                      <input type="date" class="prog-startDate" />
+                  </label>
+                  </div>
+                </div>
+              </div>
+            </td>
           </tr>
 
           <!-- Example Row: Vitamin D -->
           <tr data-med="Vitamin D">
             <td>Vitamin D</td>
-            <td class="morning">Calculating...</td>
-            <td class="evening">—</td>
-            <td><input type="number" step="0.1" min="0" max="10" /></td>
-            <td></td>
+            <td class="morning" id="progDoseVitaminDMorning">Calculating...</td>
+            <td class="evening" id="progDoseVitaminDEvening">—</td>
+            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
+            <td>
+              <input type="number" step="0.1" min="0" max="10" />
+            </td>
+            <td>
+              <div class="prog-wrapper">
+                <label>
+                  <input type="checkbox" class="prog-toggle" /> Progressive
+                </label>
+                <div class="prog-controls" style="display: none;">
+                  <div class="prog-row">
+                    <label>
+                      Increment:
+                      <input type="number" class="prog-increment" step="0.1" min="-1" max="1" />
+                    </label>
+                    <label>
+                      Every (days):
+                      <input type="number" class="prog-interval" min="1" max="30" />
+                    </label>
+                    <label>
+                      Start Date:
+                      <!-- The date input defaults to today's date (set in JS later) -->
+                      <input type="date" class="prog-startDate" />
+                  </label>
+                  </div>
+                </div>
+              </div>
+            </td>
           </tr>
 
           <!-- Example Row: CBD (progressive dosing) -->
@@ -332,6 +418,7 @@
             <td>CBD</td>
             <td class="morning" id="progDoseCBDMorning">Calculating...</td>
             <td class="evening" id="progDoseCBDEvening">Calculating...</td>
+            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
             <td>
               <input type="number" step="0.1" min="0" max="10" />
             </td>
@@ -350,19 +437,50 @@
                       Every (days):
                       <input type="number" class="prog-interval" min="1" max="30" />
                     </label>
+                    <label>
+                      Start Date:
+                      <!-- The date input defaults to today's date (set in JS later) -->
+                      <input type="date" class="prog-startDate" />
+                  </label>
                   </div>
                 </div>
               </div>
             </td>
           </tr>
 
-           <!-- Example Row: Clobazam -->
+          <!-- Example Row: Clobazam (progressive dosing) -->
           <tr data-med="Clobazam">
             <td>Clobazam</td>
-            <td class="morning">1 Drop</td>
-            <td class="evening">1 Drop</td>
-            <td><input type="number" step="0.1" min="0" max="10" /></td>
-            <td></td>
+            <td class="morning" id="progDoseClobazamMorning">Calculating...</td>
+            <td class="evening" id="progDoseClobazamEvening">Calculating...</td>
+            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
+            <td>
+              <input type="number" step="0.1" min="0" max="10" />
+            </td>
+            <td>
+              <div class="prog-wrapper">
+                <label>
+                  <input type="checkbox" class="prog-toggle" /> Progressive
+                </label>
+                <div class="prog-controls" style="display: none;">
+                  <div class="prog-row">
+                    <label>
+                      Increment:
+                      <input type="number" class="prog-increment" step="0.1" min="0.1" max="10" />
+                    </label>
+                    <label>
+                      Every (days):
+                      <input type="number" class="prog-interval" min="1" max="30" />
+                    </label>
+                    <label>
+                      Start Date:
+                      <!-- The date input defaults to today's date (set in JS later) -->
+                      <input type="date" class="prog-startDate" />
+                  </label>
+                  </div>
+                </div>
+              </div>
+            </td>
           </tr>
           
         </tbody>
@@ -390,84 +508,133 @@
        * It loops through each medication row, validates input,
        * updates the displayed doses, and writes the changes to Firebase.
        */
-      function commitAmendments() {
-        const rows = document.querySelectorAll("#medTable tbody tr");
+function commitAmendments() {
+  const rows = document.querySelectorAll("#medTable tbody tr");
 
-        rows.forEach((row) => {
-          const input = row.querySelector("td:nth-child(4) input[type='number']");
-          const medName = row.dataset.med;
-          const newValue = parseFloat(input.value);
-          input.classList.remove("invalid");
+  rows.forEach((row) => {
+    const input = row.querySelector("td:nth-child(5) input[type='number']");
+    const medName = row.dataset.med;
+    const newValue = parseFloat(input.value);
+    input.classList.remove("invalid");
 
-          // Validate the input value.
-          const isValid =
-            !isNaN(newValue) &&
-            newValue >= 0 &&
-            newValue <= 10 &&
-            Math.round(newValue * 10) % 1 === 0;
-          if (!isValid && input.value !== "") {
-            input.classList.add("invalid");
-            return;
-          }
+    // Validate the input value.
+    const isValid =
+      !isNaN(newValue) &&
+      newValue >= 0 &&
+      newValue <= 10 &&
+      Math.round(newValue * 10) % 1 === 0;
+    if (!isValid && input.value !== "") {
+      input.classList.add("invalid");
+      return;
+    }
 
-          // Update dose display cells.
-          const morningCell = row.querySelector(".morning");
-          const eveningCell = row.querySelector(".evening");
-          if (isValid) {
-            // Use a conditional: if medName is Clobazam, use " drops" instead of " ml"
-            const unit = medName === "Clobazam" ? " drops" : " ml";
-            const formatted = newValue.toFixed(1) + unit;
-            if (
-              eveningCell.innerText.trim() === "—" ||
-              eveningCell.innerText.trim() === ""
-            ) {
-              morningCell.innerText = formatted;
-            } else {
-              morningCell.innerText = formatted;
-              eveningCell.innerText = formatted;
-            }
-          }
-
-          // Prepare medication data for Firebase update.
-          const medData = {
-            morning: morningCell.innerText,
-            evening: eveningCell.innerText,
-          };
-
-          // Check and capture progressive options (located in the 5th column).
-          const progToggle = row.querySelector("td:nth-child(5) .prog-toggle");
-          if (progToggle) {
-            const isProgressive = progToggle.checked;
-            medData.progressive = isProgressive;
-
-            if (isProgressive) {
-              const incrementInput = row.querySelector(
-                "td:nth-child(5) .prog-increment"
-              );
-              const intervalInput = row.querySelector(
-                "td:nth-child(5) .prog-interval"
-              );
-
-              const incrementValue = parseFloat(incrementInput.value);
-              const intervalValue = parseInt(intervalInput.value, 10);
-
-              // Update progressive data only if inputs are valid.
-              if (!isNaN(incrementValue) && !isNaN(intervalValue)) {
-                medData.baseDose = newValue;
-                medData.increment = incrementValue;
-                medData.interval = intervalValue;
-                medData.startDate = new Date().toISOString();
-              }
-            }
-          }
-
-          // Write the updated medication data to Firebase.
-          database.ref("medications/" + medName).set(medData);
-
-          // Clear the amendment input.
-          input.value = "";
-        });
+    // Update dose display cells.
+    const morningCell = row.querySelector(".morning");
+    const eveningCell = row.querySelector(".evening");
+    if (isValid) {
+      const unit = medName === "Clobazam" ? " drops" : " ml";
+      const formatted = newValue.toFixed(1) + unit;
+      // When only one dosage cell is used, update morningCell.
+      // Otherwise update both if appropriate.
+      if (eveningCell.innerText.trim() === "—" || eveningCell.innerText.trim() === "") {
+        morningCell.innerText = formatted;
+      } else {
+        morningCell.innerText = formatted;
+        eveningCell.innerText = formatted;
       }
+    }
+
+    // Prepare the new medication data.
+    const medData = {
+      morning: morningCell.innerText,
+      evening: eveningCell.innerText,
+    };
+
+    // Handle progressive options if set.
+    const progToggle = row.querySelector("td:nth-child(6) .prog-toggle");
+    if (progToggle) {
+      const isProgressive = progToggle.checked;
+      medData.progressive = isProgressive;
+      if (isProgressive) {
+        const incrementInput = row.querySelector("td:nth-child(6) .prog-increment");
+        const intervalInput = row.querySelector("td:nth-child(6) .prog-interval");
+        const startDateInput = row.querySelector("td:nth-child(6) .prog-startDate");
+        const incrementValue = parseFloat(incrementInput.value);
+        const intervalValue = parseInt(intervalInput.value, 10);
+        // Use the start date from the input if provided; otherwise, fallback to today's date.
+        const startDateValue = startDateInput && startDateInput.value
+        ? new Date(startDateInput.value).toISOString()
+        : new Date().toISOString();
+        if (!isNaN(incrementValue) && !isNaN(intervalValue)) {
+          medData.baseDose = newValue;
+          medData.increment = incrementValue;
+          medData.interval = intervalValue;
+          medData.startDate = startDateValue; // Use the computed value!
+        }
+      }
+    }
+
+    // Identify the cell for previous dose display.
+    const historyCell = row.querySelector(".previous-dose");
+
+    // Use a Firebase transaction to update the medication record
+    const medRef = database.ref("medications/" + medName);
+    medRef.transaction((currentData) => {
+      // Initialize if no current data exists.
+      if (currentData === null) {
+        currentData = {};
+      }
+      
+      // Create a history record only if the current dose has been set
+      if (
+        currentData.morning &&
+        currentData.morning !== "Calculating..."
+      ) {
+        const historyRecord = {
+          timestamp: new Date().toISOString(),
+          morning: currentData.morning,
+          evening: currentData.evening || "—"
+        };
+
+        if (!currentData.history) {
+          currentData.history = [];
+        }
+        // Append the history record.
+        currentData.history.push(historyRecord);
+
+        // Update the UI to show the previous (most recent) dose.
+        // For a richer display, you might show both morning and evening values.
+        if (historyCell) {
+          historyCell.innerText = historyRecord.morning;
+        }
+      }
+
+      // Merge the new dose data into the record.
+      currentData.morning = medData.morning;
+      currentData.evening = medData.evening;
+      
+      // Include progressive settings if applicable.
+      if (medData.progressive) {
+        currentData.progressive = medData.progressive;
+        currentData.baseDose = medData.baseDose;
+        currentData.increment = medData.increment;
+        currentData.interval = medData.interval;
+        currentData.startDate = medData.startDate;
+      } else {
+        // Remove progressive settings if they were previously set and now disabled.
+        delete currentData.progressive;
+        delete currentData.baseDose;
+        delete currentData.increment;
+        delete currentData.interval;
+        delete currentData.startDate;
+      }
+      return currentData;
+    });
+
+    // Clear the amendment input for future updates.
+    input.value = "";
+  });
+}
 
       /**
        * Toggle visibility of progressive input controls based on checkbox state.
@@ -526,30 +693,49 @@
               morningCell.innerText = data[med].morning || "—";
               eveningCell.innerText = data[med].evening || "—";
 
+              // ----- NEW CODE for Previous Dose -----
+              const historyCell = medRow.querySelector(".previous-dose");
+              if (data[med].history && data[med].history.length > 0) {
+                // Get the last recorded history record.
+                const lastHistory = data[med].history[data[med].history.length - 1];
+                if (historyCell) {
+                  // Display the previous dose (for example, showing the morning dosage recorded previously)
+                  historyCell.innerText = lastHistory.morning;
+                }
+              } else {
+                // No history available, ensure the cell shows the default.
+                if (historyCell) {
+                  historyCell.innerText = "—";
+                }
+              }
+              // ----------------------------------------
+
               // Handle progressive options if present.
-              const progToggle = medRow.querySelector(
-                "td:nth-child(5) .prog-toggle"
-              );
+              const progToggle = medRow.querySelector("td:nth-child(6) .prog-toggle");
               if (progToggle && data[med].progressive) {
                 progToggle.checked = true;
-
-                const incrementInput = medRow.querySelector(
-                  "td:nth-child(5) .prog-increment"
-                );
-                const intervalInput = medRow.querySelector(
-                  "td:nth-child(5) .prog-interval"
-                );
+                const incrementInput = medRow.querySelector("td:nth-child(6) .prog-increment");
+                const intervalInput = medRow.querySelector("td:nth-child(6) .prog-interval");
+                const startDateInput = medRow.querySelector("td:nth-child(6) .prog-startDate");
                 if (incrementInput)
                   incrementInput.value = data[med].increment || "";
                 if (intervalInput)
                   intervalInput.value = data[med].interval || "";
-
+                // If a start date exists, set the date input to that date,
+                // formatting it to YYYY-MM-DD; otherwise, default to today.
+                if (startDateInput) {
+                  if (data[med].startDate) {
+                    startDateInput.value = new Date(data[med].startDate).toISOString().split("T")[0];
+                  } else {
+                    startDateInput.value = new Date().toISOString().split("T")[0];
+                  }
+                }
                 // Display progressive controls by default.
-                const controls = medRow.querySelector("td:nth-child(5) .prog-controls");
+                const controls = medRow.querySelector("td:nth-child(6) .prog-controls");
                 if (controls) {
                   controls.style.display = "block";
                 }
-
+                
                 // Save the progressive configuration for charting if valid.
                 if (data[med].startDate) {
                   progressiveMeds.push({
@@ -565,6 +751,15 @@
               }
             });
 
+            document.addEventListener("DOMContentLoaded", () => {
+              // For each date input in progressive options that is empty, set its value to today's date.
+              document.querySelectorAll('.prog-startDate').forEach((input) => {
+                if (!input.value) {
+                  input.value = new Date().toISOString().split("T")[0];
+                }
+              });
+            });
+            
             // Build the chart if there are any progressive medications.
             if (progressiveMeds.length) {
               buildProgressiveChart(progressiveMeds);
@@ -644,6 +839,8 @@
             fill: false,
           };
         });
+
+        
 
         // Get chart canvas context and render the chart.
         const ctx = document.getElementById('progressiveChart').getContext('2d');
