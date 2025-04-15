@@ -550,12 +550,13 @@ function commitAmendments() {
       evening: eveningCell.innerText,
     };
 
+    
     // Handle progressive options if set.
     const progToggle = row.querySelector("td:nth-child(6) .prog-toggle");
-    if (progToggle) {
-      const isProgressive = progToggle.checked;
-      medData.progressive = isProgressive;
-      if (isProgressive) {
+    if (progToggle) { 
+      const isProgressive = progToggle.checked;  
+      medData.progressive = isProgressive;  
+      if (isProgressive) {    
         const incrementInput = row.querySelector("td:nth-child(6) .prog-increment");
         const intervalInput = row.querySelector("td:nth-child(6) .prog-interval");
         const startDateInput = row.querySelector("td:nth-child(6) .prog-startDate");
@@ -587,6 +588,7 @@ function commitAmendments() {
         }
       }
     }
+
 
     // Identify the cell for previous dose display.
     const historyCell = row.querySelector(".previous-dose");
