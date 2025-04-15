@@ -802,7 +802,7 @@ function commitAmendments() {
         for (let i = 0; i <= daysToCompute; i++) {
           // Set futureDate to the current date plus i days.
           const futureDate = new Date(current);
-          futureDate.setDate(today.getDate() + i);
+          futureDate.setDate(current.getDate() + i);
 
           // Calculate the number of full calendar days elapsed since the start date.
           const daysElapsed = Math.floor((futureDate - startDate) / (1000 * 60 * 60 * 24));
