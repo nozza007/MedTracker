@@ -577,6 +577,44 @@ function commitAmendments() {
     // Identify the cell for previous dose display.
     const historyCell = row.querySelector(".previous-dose");
 
+    // Handle progressive options if set.
+    const progToggle = row.querySelector("td:nth-child(6) .prog-toggle");
+    if (progToggle) {
+      const isProgressive = progToggle.checked;
+      medData.progressive = isProgressive;
+      if (isProgressive) {
+        const incrementInput = row.querySelector("td:nth-child(6) .prog-increment");
+        const intervalInput = row.querySelector("td:nth-child(6) .prog-interval");
+        const startDateInput = row.querySelector("td:nth-child(6) .prog-startDate");
+        const incrementValue = parseFloat(incrementInput.value);
+        const intervalValue = parseInt(intervalInput.value, 10);
+        // Use the start date from the input if provided; otherwise, fallback to today's date.
+        const startDateValue = startDateInput && startDateInput.value
+          ? new Date(startDateInput.value).toISOString()
+          : new Date().toISOString();
+        if (!isNaN(incrementValue) && !isNaN(intervalValue)) {
+          medData.baseDose = newValue;
+          medData.increment = incrementValue;
+          medData.interval = intervalValue;
+          medData.startDate = startDateValue; // Use the computed value!
+          // Compute today's progressive dose.
+          const computedSeries = computeProgressiveSeries({
+            baseDose: medData.baseDose,
+            increment: medData.increment,
+            interval: medData.interval,
+            startDate: medData.startDate
+          });
+          // Update table cells with computed value for today (index 0).
+          const computedDose = computedSeries[0];
+          morningCell.innerText = computedDose.toFixed(1) + (medName === "Clobazam" ? " drops" : " ml");
+          // If an evening dose is applicable, update it similarly.
+          if (eveningCell.innerText.trim() !== "—") {
+            eveningCell.innerText = computedDose.toFixed(1) + (medName === "Clobazam" ? " drops" : " ml");
+          }
+        }
+      }
+    }
+    
     // Use a Firebase transaction to update the medication record
     const medRef = database.ref("medications/" + medName);
     medRef.transaction((currentData) => {
