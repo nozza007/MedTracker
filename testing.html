@@ -709,6 +709,26 @@ function commitAmendments() {
               morningCell.innerText = data[med].morning || "—";
               eveningCell.innerText = data[med].evening || "—";
 
+
+              // If the medication has progressive dosing enabled, recompute today's dose.
+              if (data[med].progressive && data[med].startDate) {
+                // Compute the current progressive dose using the stored progressive configuration.
+                const computedSeries = computeProgressiveSeries({
+                  baseDose: data[med].baseDose,
+                  increment: data[med].increment,
+                  interval: data[med].interval,
+                  startDate: data[med].startDate
+                });
+                const computedDose = computedSeries[0];
+                const unit = med === "Clobazam" ? " drops" : " ml";
+                // Update the displayed values with the computed dose.
+                morningCell.innerText = computedDose.toFixed(1) + unit;
+                // If an evening dose is expected, update it as well.
+                if (eveningCell.innerText.trim() !== "—") {
+                  eveningCell.innerText = computedDose.toFixed(1) + unit;
+                }
+              }
+              
               // ----- NEW CODE for Previous Dose -----
               const historyCell = medRow.querySelector(".previous-dose");
               if (data[med].history && data[med].history.length > 0) {
