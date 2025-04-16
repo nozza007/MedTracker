@@ -550,12 +550,13 @@ function commitAmendments() {
       evening: eveningCell.innerText,
     };
 
+    
     // Handle progressive options if set.
     const progToggle = row.querySelector("td:nth-child(6) .prog-toggle");
-    if (progToggle) {
-      const isProgressive = progToggle.checked;
-      medData.progressive = isProgressive;
-      if (isProgressive) {
+    if (progToggle) { 
+      const isProgressive = progToggle.checked;  
+      medData.progressive = isProgressive;  
+      if (isProgressive) {    
         const incrementInput = row.querySelector("td:nth-child(6) .prog-increment");
         const intervalInput = row.querySelector("td:nth-child(6) .prog-interval");
         const startDateInput = row.querySelector("td:nth-child(6) .prog-startDate");
@@ -563,20 +564,35 @@ function commitAmendments() {
         const intervalValue = parseInt(intervalInput.value, 10);
         // Use the start date from the input if provided; otherwise, fallback to today's date.
         const startDateValue = startDateInput && startDateInput.value
-        ? new Date(startDateInput.value).toISOString()
-        : new Date().toISOString();
+          ? new Date(startDateInput.value).toISOString()
+          : new Date().toISOString();
         if (!isNaN(incrementValue) && !isNaN(intervalValue)) {
           medData.baseDose = newValue;
           medData.increment = incrementValue;
           medData.interval = intervalValue;
           medData.startDate = startDateValue; // Use the computed value!
+          // Compute today's progressive dose.
+          const computedSeries = computeProgressiveSeries({
+            baseDose: medData.baseDose,
+            increment: medData.increment,
+            interval: medData.interval,
+            startDate: medData.startDate
+          });
+          // Update table cells with computed value for today (index 0).
+          const computedDose = computedSeries[0];
+          morningCell.innerText = computedDose.toFixed(1) + (medName === "Clobazam" ? " drops" : " ml");
+          // If an evening dose is applicable, update it similarly.
+          if (eveningCell.innerText.trim() !== "—") {
+            eveningCell.innerText = computedDose.toFixed(1) + (medName === "Clobazam" ? " drops" : " ml");
+          }
         }
       }
     }
 
+
     // Identify the cell for previous dose display.
     const historyCell = row.querySelector(".previous-dose");
-
+    
     // Use a Firebase transaction to update the medication record
     const medRef = database.ref("medications/" + medName);
     medRef.transaction((currentData) => {
@@ -693,6 +709,26 @@ function commitAmendments() {
               morningCell.innerText = data[med].morning || "—";
               eveningCell.innerText = data[med].evening || "—";
 
+
+              // If the medication has progressive dosing enabled, recompute today's dose.
+              if (data[med].progressive && data[med].startDate) {
+                // Compute the current progressive dose using the stored progressive configuration.
+                const computedSeries = computeProgressiveSeries({
+                  baseDose: data[med].baseDose,
+                  increment: data[med].increment,
+                  interval: data[med].interval,
+                  startDate: data[med].startDate
+                });
+                const computedDose = computedSeries[0];
+                const unit = med === "Clobazam" ? " drops" : " ml";
+                // Update the displayed values with the computed dose.
+                morningCell.innerText = computedDose.toFixed(1) + unit;
+                // If an evening dose is expected, update it as well.
+                if (eveningCell.innerText.trim() !== "—") {
+                  eveningCell.innerText = computedDose.toFixed(1) + unit;
+                }
+              }
+              
               // ----- NEW CODE for Previous Dose -----
               const historyCell = medRow.querySelector(".previous-dose");
               if (data[med].history && data[med].history.length > 0) {
@@ -788,7 +824,7 @@ function commitAmendments() {
         for (let i = 0; i <= daysToCompute; i++) {
           // Set futureDate to the current date plus i days.
           const futureDate = new Date(current);
-          futureDate.setDate(today.getDate() + i);
+          futureDate.setDate(current.getDate() + i);
 
           // Calculate the number of full calendar days elapsed since the start date.
           const daysElapsed = Math.floor((futureDate - startDate) / (1000 * 60 * 60 * 24));
