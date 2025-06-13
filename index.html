@@ -147,12 +147,11 @@
                 })[0];
 
                 const unit = med === "Clobazam" ? " drops" : " ml";
-                row.querySelector(".morning").innerText = computedDose.toFixed(1) + unit;
-                if (data[med].evening !== "—") {
-                  row.querySelector(".evening").innerText = computedDose.toFixed(1) + unit;
+                row.querySelector(".morning").innerText = `${computedDose.toFixed(1)}${unit}`;
+                if (data[med].evening && data[med].evening !== "—") {
+                row.querySelector(".evening").innerText = `${computedDose.toFixed(1)}${unit}`;
                 }
               }
-
               tbody.appendChild(row);
             });
           });
