@@ -4,142 +4,55 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
-
-
-    <!-- Chart.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Daily Medication Tracker</title>
+    <title>Daily Medication Snapshot</title>
 
-    <!-- ============================ -->
-    <!--           STYLESHEET         -->
-    <!-- ============================ -->
     <style>
-      :root {
-        --bg: #fdfdfd;
-        --text: #222;
-        --card: #ffffff;
-        --border: #ddd;
-        --accent-morning: #fef7e0;
-        --accent-evening: #e3f2fd;
-      }
-
-      /* Dark mode overrides 
-      @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1f1f1f;
-        --text: #fdfdfd;
-        --card: #333;
-        --border: #555;
-        --accent-morning: #4e3a25;
-        --accent-evening: #2a3a4e;
-      }
-    }*/
-
-      /* Global body styles */
+      /* Simplified CSS for snapshot view */
       body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        max-width: 100%;
-        width: 100%;
-        margin: 0 auto;
         padding: 1em;
-        box-sizing: border-box;
-        background-color: var(--bg);
-        color: var(--text);
+        background-color: #fdfdfd;
+        color: #222;
       }
-
-      /* Main heading styles */
       h1 {
         text-align: center;
-        font-size: 1.8em;
       }
-
-      /* Note text styles */
       .note {
         text-align: center;
-        font-size: 0.95em;
         margin-bottom: 1em;
       }
-
-      /* Table wrapper to allow horizontal scrolling */
       .table-wrapper {
         overflow-x: auto;
+        margin: auto;
         max-width: 100%;
-        margin-bottom: 1.5em;
-        padding: 0 0.5em;
-        box-sizing: border-box;
       }
-
-      /* Media query for small screens */
-      @media (max-width: 480px) {
-        table {
-          font-size: 0.9em;
-        }
-        th,
-        td {
-          padding: 0.5em;
-        }
-        input[type="number"] {
-          width: 3em;
-          font-size: 0.9em;
-        }
-        .prog-wrapper {
-          font-size: 0.8em;
-          padding: 0.4em;
-        }
-        .commit-button {
-          font-size: 1em;
-          padding: 1em;
-        }
-      }
-
-      /* Table styles */
       table {
         width: 100%;
         border-collapse: collapse;
-        background: var(--card);
-        border: 1px solid var(--border);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-        border-radius: 8px;
-        overflow: hidden;
+        background: #fff;
+        border: 1px solid #ddd;
       }
       th,
       td {
-        padding: 1em;
-        border: 1px solid var(--border);
+        padding: 0.75em;
         text-align: center;
-        font-size: 1em;
-      }
-      th {
-        background-color: var(--border);
+        border: 1px solid #ddd;
       }
       .morning {
-        background-color: var(--accent-morning);
+        background-color: #fef7e0;
       }
       .evening {
-        background-color: var(--accent-evening);
+        background-color: #e3f2fd;
       }
-
     </style>
   </head>
   <body>
-    <!-- ================================= -->
-    <!--        AUTHENTICATION UI          -->
-    <!-- Google Sign-In / Sign-Out Buttons -->
-    <!-- ================================= -->
-      <div id="authSection" style="text-align:center; margin-bottom:1em;">
-        <button id="loginButton">Sign in with Google</button>
-        <button id="logoutButton" style="display:none;">Sign out</button>
-      </div>
-    
-    <!-- HEADER -->
-    <h1>Daily Medication Tracker</h1>
+    <h1>Daily Medication Snapshot</h1>
     <div class="note" id="dateDisplay"></div>
 
-    <!-- MEDICATION TABLE -->
     <div class="table-wrapper">
       <table id="medTable">
         <thead>
@@ -147,375 +60,64 @@
             <th>Medication</th>
             <th class="morning">Morning Dose</th>
             <th class="evening">Evening Dose</th>
-            <th class="previous-dose-header" style="color:#888; font-size:0.85em;">Previous Dose</th>
-            <th>Amend Dosage</th>
-            <th>Progressive Options</th>
+            <th>Previous Dose</th>
           </tr>
         </thead>
         <tbody>
-          
-          <!-- Example Row: Estilsona -->
-          <tr data-med="Estilsona">
-            <td>Estilsona</td>
-            <td class="morning" id="progDoseEstilsonaMorning">Calculating...</td>
-            <td class="evening" id="progDoseEstilsonaEvening">—</td>
-            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
-            <td>
-              <input type="number" step="0.1" min="0" max="10" />
-            </td>
-            <td>
-              <div class="prog-wrapper">
-                <label>
-                  <input type="checkbox" class="prog-toggle" /> Progressive
-                </label>
-              </div>
-            </td>
-          </tr>
-
-          <!-- Example Row: Omeprizol -->
-          <tr data-med="Omeprizol">
-            <td>Omeprizol</td>
-            <td class="morning" id="progDoseOmeprizolMorning">Calculating...</td>
-            <td class="evening" id="progDoseOmeprizolEvening">—</td>
-            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
-            <td>
-              <input type="number" step="0.1" min="0" max="10" />
-            </td>
-            <td>
-              </div>
-            </td>
-          </tr>
-
-          <!-- Example Row: Depakine -->
-          <tr data-med="Depakine">
-            <td>Depakine</td>
-            <td class="morning" id="progDoseDepakineMorning">Calculating...</td>
-            <td class="evening" id="progDoseDepakineEvening">Calculating...</td>
-            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
-            <td>
-              <input type="number" step="0.1" min="0" max="10" />
-            </td>
-            <td>
-              </div>
-            </td>
-          </tr>
-
-          <!-- Example Row: Vitamin D -->
-          <tr data-med="Vitamin D">
-            <td>Vitamin D</td>
-            <td class="morning" id="progDoseVitaminDMorning">Calculating...</td>
-            <td class="evening" id="progDoseVitaminDEvening">—</td>
-            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
-            <td>
-              <input type="number" step="0.1" min="0" max="10" />
-            </td>
-            <td>
-              </div>
-            </td>
-          </tr>
-
-          <!-- Example Row: CBD (progressive dosing) -->
-          <tr data-med="CBD">
-            <td>CBD</td>
-            <td class="morning" id="progDoseCBDMorning">Calculating...</td>
-            <td class="evening" id="progDoseCBDEvening">Calculating...</td>
-            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
-            <td>
-              <input type="number" step="0.1" min="0" max="10" />
-            </td>
-            <td>
-              </div>
-            </td>
-          </tr>
-
-          <!-- Example Row: Rufinamide (progressive dosing) -->
-          <tr data-med="Rufinamide">
-            <td>Rufinamide</td>
-            <td class="morning" id="progDoseClobazamMorning">Calculating...</td>
-            <td class="evening" id="progDoseClobazamEvening">Calculating...</td>
-            <td class="previous-dose" style="color:#888; font-size:0.85em;">—</td>
-            <td>
-              <input type="number" step="0.1" min="0" max="10" />
-            </td>
-            <td>
-              
-            </td>
-            </td>
-          </tr>
-          
+          <!-- Medication rows will be injected dynamically -->
         </tbody>
       </table>
     </div>
 
-    <!-- CHART CONTAINER: Displays the 30-day progressive dosage prediction -->
-    <div class="chart-container" style="width: 100%; max-width: 600px; margin: 20px auto;">
-      <canvas id="progressiveChart"></canvas>
-    </div>
-
-    <!-- ============================ -->
-    <!--           SCRIPT             -->
-    <!-- ============================ -->
     <script>
-      // Display today's date in the note section.
-      const today = new Date();
-      document.getElementById("dateDisplay").innerText = "Today is: " + today.toDateString();
-
-    // Identify the cell for previous dose display.
-    const historyCell = row.querySelector(".previous-dose");
-    
-
-      /**
-       * Firebase configuration and initialization.
-       */
       const firebaseConfig = {
         apiKey: "AIzaSyBh7B7zxl3EQ1p7lrnAzsPerrwPfytZzpk",
         authDomain: "med-dosage.firebaseapp.com",
-        databaseURL:
-          "https://med-dosage-default-rtdb.europe-west1.firebasedatabase.app",
+        databaseURL: "https://med-dosage-default-rtdb.europe-west1.firebasedatabase.app",
         projectId: "med-dosage",
         storageBucket: "med-dosage.appspot.com",
         messagingSenderId: "598118703351",
         appId: "1:598118703351:web:f2ff4bc51fca900b08f3f2",
-        measurementId: "G-NH9Q0HQV2Y",
+        measurementId: "G-NH9Q0HQV2Y"
       };
 
-      // Initialize Firebase.
       firebase.initializeApp(firebaseConfig);
       const database = firebase.database();
-      const auth = firebase.auth();
-      const provider = new firebase.auth.GoogleAuthProvider();
 
+      document.getElementById("dateDisplay").innerText = "Today is: " + new Date().toDateString();
 
-      /**
-       * Fetch medications from Firebase and update the UI.
-       * Also, collect progressive configurations for charting.
-       */
-      document.addEventListener("DOMContentLoaded", () => {
-        database
-          .ref("medications")
-          .once("value")
-          .then((snapshot) => {
-            const data = snapshot.val();
-            console.log(data);
-            if (!data) return;
-
-            // Array to hold medications with progressive dosing for chart display.
-            const progressiveMeds = [];
-
-            Object.keys(data).forEach((med) => {
-              const medRow = document.querySelector(`tr[data-med="${med}"]`);
-              if (!medRow) return;
-
-              // Update dose display cells.
-              const morningCell = medRow.querySelector(".morning");
-              const eveningCell = medRow.querySelector(".evening");
-              morningCell.innerText = data[med].morning || "—";
-              eveningCell.innerText = data[med].evening || "—";
-
-
-              // If the medication has progressive dosing enabled, recompute today's dose.
-              if (data[med].progressive && data[med].startDate) {
-                // Compute the current progressive dose using the stored progressive configuration.
-                const computedSeries = computeProgressiveSeries({
-                  baseDose: data[med].baseDose,
-                  increment: data[med].increment,
-                  interval: data[med].interval,
-                  startDate: data[med].startDate
-                });
-                const computedDose = computedSeries[0];
-                const unit = med === "Clobazam" ? " drops" : " ml";
-                // Update the displayed values with the computed dose.
-                morningCell.innerText = computedDose.toFixed(1) + unit;
-                // If an evening dose is expected, update it as well.
-                if (eveningCell.innerText.trim() !== "—") {
-                  eveningCell.innerText = computedDose.toFixed(1) + unit;
-                }
-              }
-              
-              // ----- NEW CODE for Previous Dose -----
-              const historyCell = medRow.querySelector(".previous-dose");
-              if (data[med].history && data[med].history.length > 0) {
-                // Get the last recorded history record.
-                const lastHistory = data[med].history[data[med].history.length - 1];
-                if (historyCell) {
-                  // Display the previous dose (for example, showing the morning dosage recorded previously)
-                  historyCell.innerText = lastHistory.morning;
-                }
-              } else {
-                // No history available, ensure the cell shows the default.
-                if (historyCell) {
-                  historyCell.innerText = "—";
-                }
-              }
-              // ----------------------------------------
-
-              // Handle progressive options if present.
-              const progToggle = medRow.querySelector("td:nth-child(6) .prog-toggle");
-              if (progToggle && data[med].progressive) {
-                progToggle.checked = true;
-                const incrementInput = medRow.querySelector("td:nth-child(6) .prog-increment");
-                const intervalInput = medRow.querySelector("td:nth-child(6) .prog-interval");
-                const startDateInput = medRow.querySelector("td:nth-child(6) .prog-startDate");
-                if (incrementInput)
-                  incrementInput.value = data[med].increment || "";
-                if (intervalInput)
-                  intervalInput.value = data[med].interval || "";
-                // If a start date exists, set the date input to that date,
-                // formatting it to YYYY-MM-DD; otherwise, default to today.
-                if (startDateInput) {
-                  if (data[med].startDate) {
-                    startDateInput.value = new Date(data[med].startDate).toISOString().split("T")[0];
-                  } else {
-                    startDateInput.value = new Date().toISOString().split("T")[0];
-                  }
-                }
-                // Display progressive controls by default.
-                const controls = medRow.querySelector("td:nth-child(6) .prog-controls");
-                if (controls) {
-                  controls.style.display = "block";
-                }
-                
-                // Save the progressive configuration for charting if valid.
-                if (data[med].startDate) {
-                  progressiveMeds.push({
-                    name: med,
-                    config: {
-                      baseDose: data[med].baseDose,
-                      increment: data[med].increment,
-                      interval: data[med].interval,
-                      startDate: data[med].startDate,
-                    },
-                  });
-                }
-              }
-            });
-
-            document.addEventListener("DOMContentLoaded", () => {
-              // For each date input in progressive options that is empty, set its value to today's date.
-              document.querySelectorAll('.prog-startDate').forEach((input) => {
-                if (!input.value) {
-                  input.value = new Date().toISOString().split("T")[0];
-                }
-              });
-            });
-            
-            // Build the chart if there are any progressive medications.
-            if (progressiveMeds.length) {
-              buildProgressiveChart(progressiveMeds);
-            }
-          });
-      });
-
-      /**
-       * Compute the predicted dosage series for the next 30 days based on the progressive configuration.
-       *
-       * @param {Object} config - The progressive configuration (baseDose, increment, interval, startDate).
-       * @param {number} daysToCompute - Number of days to compute (default is 30).
-       * @returns {Array} - Array of predicted dosage values.
-       */
-      function computeProgressiveSeries(config, daysToCompute = 30) {
-        const series = [];
-        
-        // Normalize today's date to midnight.
-        const current = new Date();
-        current.setHours(0, 0, 0, 0);
-
-        // Parse and normalize the start date to midnight.
+      function computeProgressiveDose(config) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
         const startDate = new Date(config.startDate);
         startDate.setHours(0, 0, 0, 0);
-
-        for (let i = 0; i <= daysToCompute; i++) {
-          // Set futureDate to the current date plus i days.
-          const futureDate = new Date(current);
-          futureDate.setDate(current.getDate() + i);
-
-          // Calculate the number of full calendar days elapsed since the start date.
-          const daysElapsed = Math.floor((futureDate - startDate) / (1000 * 60 * 60 * 24));
-
-          // Determine how many times the increment is applied.
-          const steps = Math.floor(daysElapsed / config.interval);
-
-          // Compute the dose based on the base dose plus increments.
-          let dose = config.baseDose;
-          if (daysElapsed >= 0) {
-            dose += steps * config.increment;
-          }
-          // Ensure the dose never falls below zero.
-          dose = Math.max(dose, 0);
-          series.push(parseFloat(dose.toFixed(1)));
-        }
-        return series;
+        const daysElapsed = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+        const steps = Math.floor(daysElapsed / config.interval);
+        let dose = config.baseDose + steps * config.increment;
+        return Math.max(0, parseFloat(dose.toFixed(1)));
       }
 
-      /**
-       * Build and render a line chart using Chart.js, showing the predicted progressive dosage for the next 30 days.
-       *
-       * @param {Array} progressiveMeds - Array of medications with progressive configuration.
-       */
-      function buildProgressiveChart(progressiveMeds) {
-        const daysToCompute = 30;
-        const labels = [];
-        const today = new Date();
+      database.ref("medications").once("value").then(snapshot => {
+        const data = snapshot.val();
+        const tbody = document.querySelector("#medTable tbody");
+        Object.keys(data).forEach(med => {
+          const medData = data[med];
+          const row = document.createElement("tr");
+          const unit = med === "Clobazam" ? " drops" : " ml";
 
-        // Create labels for each day (e.g., "Mar 27").
-        for (let i = 0; i <= daysToCompute; i++) {
-          const futureDate = new Date(today);
-          futureDate.setDate(today.getDate() + i);
-          const options = { month: 'short', day: 'numeric' };
-          labels.push(futureDate.toLocaleDateString(undefined, options));
-        }
+          const morningDose = medData.progressive && medData.startDate ? computeProgressiveDose(medData) : medData.morning || "—";
+          const eveningDose = (medData.evening && medData.evening !== "—") ? morningDose : "—";
+          const previous = (medData.history && medData.history.length) ? medData.history[medData.history.length - 1].morning : "—";
 
-        // Prepare datasets for each progressive medication.
-        const datasets = progressiveMeds.map((med, index) => {
-          const series = computeProgressiveSeries(med.config, daysToCompute);
-          const borderColors = ['#007bff', '#28a745', '#dc3545', '#ffc107'];
-          return {
-            label: med.name,
-            data: series,
-            borderColor: borderColors[index % borderColors.length],
-            backgroundColor: 'transparent',
-            tension: 0.2,
-            fill: false,
-          };
+          row.innerHTML = `
+            <td>${med}</td>
+            <td class="morning">${morningDose}${unit}</td>
+            <td class="evening">${eveningDose}${unit}</td>
+            <td>${previous}${unit}</td>
+          `;
+          tbody.appendChild(row);
         });
-
-        
-
-        // Get chart canvas context and render the chart.
-        const ctx = document.getElementById('progressiveChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: datasets,
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { position: 'top' },
-              title: {
-                display: true,
-                text: 'Progressive Dosage Over Next 30 Days',
-              },
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                title: {
-                  display: true,
-                  text: 'Dose (ml)',
-                },
-              },
-              x: {
-                title: {
-                  display: true,
-                  text: 'Date',
-                },
-              },
-            },
-          },
-        });
-      }
+      });
     </script>
   </body>
 </html>
