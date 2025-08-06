@@ -76,14 +76,16 @@
           <td><button>Hide</button></td>
         `;
 
-        tr.querySelector('button:nth-child(1)').onclick = () => {
+        const buttons = tr.querySelectorAll('button');
+
+        buttons[0].onclick = () => {
           const inputs = tr.querySelectorAll('input');
           this.morning = parseFloat(inputs[0].value) || 0;
           this.evening = parseFloat(inputs[1].value) || 0;
           this.save();
         };
 
-        tr.querySelector('button:nth-child(2)').onclick = () => {
+        buttons[1].onclick = () => {
           this.hidden = true;
           this.save();
           tr.remove();
