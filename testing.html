@@ -531,12 +531,18 @@ function commitAmendments() {
     const newValue = parseFloat(input.value);
     input.classList.remove("invalid");
 
-    // Validate the input value.
-    const isValid =
-      !isNaN(newValue) &&
-      newValue >= 0 &&
-      newValue <= 20 &&
-      Math.round(newValue * 10) % 1 === 0;
+// Dynamically read min, max, and step from input attributes
+const min = parseFloat(input.min) || 0;
+const max = parseFloat(input.max) || 20;
+const step = parseFloat(input.step) || 0.1;
+
+// More accurate validation using modulo with tolerance
+const isValid =
+  !isNaN(newValue) &&
+  newValue >= min &&
+  newValue <= max &&
+  Math.abs((newValue - min) % step) < 0.0001;
+    
     if (!isValid && input.value !== "") {
       input.classList.add("invalid");
       return;
