@@ -128,8 +128,8 @@
     class MedicationRow {
       constructor(name, data) {
         this.name = name;
-        this.morning = data?.morning || 0;
-        this.evening = data?.evening || 0;
+        this.morning = data?.morning ?? "";
+        this.evening = data?.evening ?? "";
         this.hidden = data?.hidden || false;
       }
 
@@ -139,8 +139,8 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${this.name}</td>
-          <td class="morning"><input type="number" value="${this.morning}" /></td>
-          <td class="evening"><input type="number" value="${this.evening}" /></td>
+          <td class="morning"><input type="text" value="${this.morning}" /></td>
+          <td class="evening"><input type="text" value="${this.evening}" /></td>
           <td><button>Update</button></td>
           <td><button>Hide</button></td>
         `;
@@ -149,8 +149,8 @@
 
         buttons[0].onclick = () => {
           const inputs = tr.querySelectorAll('input');
-          this.morning = parseFloat(inputs[0].value) || 0;
-          this.evening = parseFloat(inputs[1].value) || 0;
+          this.morning = inputs[0].value.trim();
+          this.evening = inputs[1].value.trim();
           this.save();
         };
 
@@ -185,7 +185,7 @@
     function addMedication() {
       const name = prompt("Enter medication name:");
       if (name) {
-        const newRow = new MedicationRow(name, { morning: 0, evening: 0, hidden: false });
+        const newRow = new MedicationRow(name, { morning: "", evening: "", hidden: false });
         newRow.save();
         const tr = newRow.render();
         if (tr) medTableBody.appendChild(tr);
