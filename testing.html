@@ -535,7 +535,7 @@ function commitAmendments() {
     const isValid =
       !isNaN(newValue) &&
       newValue >= 0 &&
-      newValue <= 10 &&
+      newValue <= 20 &&
       Math.round(newValue * 10) % 1 === 0;
     if (!isValid && input.value !== "") {
       input.classList.add("invalid");
