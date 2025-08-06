@@ -6,43 +6,86 @@
   <title>Medication Tracker</title>
   <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
   <style>
     body {
       font-family: sans-serif;
       padding: 1em;
+      background-color: #fdfdfd;
+      color: #222;
     }
     table {
       width: 100%;
       border-collapse: collapse;
+      background: #fff;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
     }
     th, td {
-      border: 1px solid #ccc;
-      padding: 0.5em;
+      border: 1px solid #ddd;
+      padding: 1em;
       text-align: center;
+    }
+    th {
+      background-color: #eee;
+    }
+    .morning {
+      background-color: #fef7e0;
+    }
+    .evening {
+      background-color: #e3f2fd;
     }
     .controls {
       margin: 1em 0;
+      text-align: center;
+    }
+    .hidden { display: none; }
+    #authContainer { text-align: right; margin-bottom: 1em; }
+    .chart-container {
+      max-width: 700px;
+      margin: 2em auto;
+      text-align: center;
     }
   </style>
 </head>
 <body>
+  <div id="authContainer">
+    <button id="signInBtn">Sign In with Google</button>
+    <button id="signOutBtn" class="hidden">Sign Out</button>
+  </div>
+
   <h1>Medication Tracker</h1>
-  <div class="controls">
+
+  <div class="controls hidden" id="appControls">
     <button onclick="addMedication()">Add Medication</button>
   </div>
-  <table id="medTable">
+
+  <table class="hidden" id="medTable">
     <thead>
       <tr>
         <th>Medication</th>
-        <th>Morning</th>
-        <th>Evening</th>
+        <th class="morning">Morning</th>
+        <th class="evening">Evening</th>
         <th>Update</th>
         <th>Remove</th>
       </tr>
     </thead>
     <tbody id="medTableBody"></tbody>
   </table>
+
+  <div class="chart-container hidden" id="chartContainer">
+    <iframe
+      src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQBu_GO1WzEaGErbT8zLTYhHHdvbk9Yg4Q_qp7mpU0_OfgjeE29ifMC3fqiYvcfGrmNfB4WNJ3YwcOX/pubchart?oid=1597043800&format=image"
+      width="100%"
+      height="400"
+      frameborder="0"
+      style="border:0;"
+      allowfullscreen>
+    </iframe>
+  </div>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBh7B7zxl3EQ1p7lrnAzsPerrwPfytZzpk",
@@ -55,6 +98,32 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    const auth = firebase.auth();
+
+    const signInBtn = document.getElementById("signInBtn");
+    const signOutBtn = document.getElementById("signOutBtn");
+    const medTable = document.getElementById("medTable");
+    const appControls = document.getElementById("appControls");
+    const chartContainer = document.getElementById("chartContainer");
+    const medTableBody = document.getElementById("medTableBody");
+
+    signInBtn.onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    signOutBtn.onclick = () => auth.signOut();
+
+    auth.onAuthStateChanged(user => {
+      const isSignedIn = !!user;
+      signInBtn.classList.toggle("hidden", isSignedIn);
+      signOutBtn.classList.toggle("hidden", !isSignedIn);
+      medTable.classList.toggle("hidden", !isSignedIn);
+      appControls.classList.toggle("hidden", !isSignedIn);
+      chartContainer.classList.toggle("hidden", !isSignedIn);
+
+      if (isSignedIn) {
+        db.ref("medications").on("value", renderAllMeds);
+      } else {
+        medTableBody.innerHTML = '';
+      }
+    });
 
     class MedicationRow {
       constructor(name, data) {
@@ -70,8 +139,8 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${this.name}</td>
-          <td><input type="number" value="${this.morning}" /></td>
-          <td><input type="number" value="${this.evening}" /></td>
+          <td class="morning"><input type="number" value="${this.morning}" /></td>
+          <td class="evening"><input type="number" value="${this.evening}" /></td>
           <td><button>Update</button></td>
           <td><button>Hide</button></td>
         `;
@@ -103,8 +172,6 @@
       }
     }
 
-    const medTableBody = document.getElementById('medTableBody');
-
     function renderAllMeds(snapshot) {
       medTableBody.innerHTML = '';
       const meds = snapshot.val() || {};
@@ -124,8 +191,6 @@
         if (tr) medTableBody.appendChild(tr);
       }
     }
-
-    db.ref("medications").on("value", renderAllMeds);
   </script>
 </body>
 </html>
