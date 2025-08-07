@@ -179,12 +179,15 @@
 
       function formatWithUnit(value, unit = "ml") {
         if (!value || value === "—") return "—";
-        if (typeof value === "string" && (value.includes("ml 💧") || value.includes("drops 💦") || value.includes("tablet 💊"))) {
-          return value;
+          const emojiMap = {
+            ml: "ml 💧",
+            drops: "drops 💦",  
+            tablet: "tablet 💊"
+          };
+          const unitDisplay = emojiMap[unit] || unit;
+        return `${value} ${unitDisplay}`;
         }
-        return `${value} ${unit}`;
-      }
-
+      
       function getPreviousDose(medData) {
         if (medData.history && medData.history.length > 0) {
           return medData.history[medData.history.length - 1].morning || "—";
