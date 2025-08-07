@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -140,12 +140,21 @@
         tr.innerHTML = `
           <td>${this.name}</td>
           <td class="morning"><input type="text" value="${this.morning}" /></td>
-          <td class="evening"><input type="text" value="${this.evening}" /></td>
+          <td class="evening"><input type="number" value="${this.evening}" /></td>
+          <td>
+            <select>
+              <option value="ml">ml</option>
+              <option value="drops">drops</option>
+              <option value="tablet">tablet</option>
+            </select>
+          </td>
           <td><button>Update</button></td>
           <td><button>Hide</button></td>
         `;
 
         const buttons = tr.querySelectorAll('button');
+        const unitSelect = tr.querySelector("select");
+        unitSelect.value = this.unit || "ml";
 
         buttons[0].onclick = () => {
           const inputs = tr.querySelectorAll('input');
@@ -164,11 +173,13 @@
       }
 
       save() {
-        db.ref(`medications/${this.name}`).set({
+        this.unit = tr.querySelector("select").value;
+          db.ref(`medications/${this.name}`).set({
           morning: this.morning,
           evening: this.evening,
+          unit: this.unit,
           hidden: this.hidden
-        });
+        });        
       }
     }
 
