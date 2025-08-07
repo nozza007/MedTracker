@@ -166,7 +166,7 @@
                 startDate: medData.startDate
                 })[0];
 
-              const unit = med.toLowerCase().includes("rufinamide") ? " drops" : " ml";
+              const unit = medData.unit || "ml";
               row.querySelector(".morning").innerText = computedDose.toFixed(1) + unit;
               if (medData.evening !== "—") {
                 row.querySelector(".evening").innerText = computedDose.toFixed(1) + unit;
