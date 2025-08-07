@@ -198,7 +198,7 @@
     function addMedication() {
       const name = prompt("Enter medication name:");
       if (name) {
-        const newRow = new MedicationRow(name, { morning: "", evening: "", unit: "ml":, hidden: false });
+        const newRow = new MedicationRow(name, { morning: "", evening: "", unit: "ml", hidden: false });
         newRow.save();
         const tr = newRow.render();
         if (tr) medTableBody.appendChild(tr);
