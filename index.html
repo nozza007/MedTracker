@@ -179,7 +179,7 @@
 
       function formatWithUnit(value, unit = "ml") {
         if (!value || value === "—") return "—";
-        if (typeof value === "string" && (value.includes("ml") || value.includes("drops") || value.includes("tablet"))) {
+        if (typeof value === "string" && (value.includes("ml 💧") || value.includes("drops 💦") || value.includes("tablet 💊"))) {
           return value;
         }
         return `${value} ${unit}`;
