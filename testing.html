@@ -176,7 +176,6 @@
       }
 
       save() {
-        this.unit = tr.querySelector("select").value;
           db.ref(`medications/${this.name}`).set({
           morning: this.morning,
           evening: this.evening,
