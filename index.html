@@ -147,29 +147,31 @@
 
             const tbody = document.querySelector("#medTable tbody");
             Object.keys(data).forEach((med) => {
-              const row = document.createElement("tr");
-              row.innerHTML = `
-                <td>${med}</td>
-                <td class="morning">${formatDose(data[med].morning)}</td>
-                <td class="evening">${formatDose(data[med].evening)}</td>
-                <td class="previous-dose">${getPreviousDose(data[med])}</td>
-              `;
+            const medData = data[med];
+            if (medData.hidden) return; // ⛔ Skip hidden meds
 
-              if (data[med].progressive && data[med].startDate) {
-                const computedDose = computeProgressiveSeries({
-                  baseDose: data[med].baseDose,
-                  increment: data[med].increment,
-                  interval: data[med].interval,
-                  startDate: data[med].startDate
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${med}</td>
+              <td class="morning">${formatDose(medData.morning)}</td>
+              <td class="evening">${formatDose(medData.evening)}</td>
+              <td class="previous-dose">${getPreviousDose(medData)}</td>
+            `;
+
+            if (medData.progressive && medData.startDate) {
+              const computedDose = computeProgressiveSeries({
+                baseDose: medData.baseDose,
+                increment: medData.increment,
+                interval: medData.interval,
+                startDate: medData.startDate
                 })[0];
 
-                const unit = med.toLowerCase().includes("rufinamide") ? " drops" : " ml";
-                row.querySelector(".morning").innerText = computedDose.toFixed(1) + unit;
-                if (data[med].evening !== "—") {
-                  row.querySelector(".evening").innerText = computedDose.toFixed(1) + unit;
-                }
+              const unit = med.toLowerCase().includes("rufinamide") ? " drops" : " ml";
+              row.querySelector(".morning").innerText = computedDose.toFixed(1) + unit;
+              if (medData.evening !== "—") {
+                row.querySelector(".evening").innerText = computedDose.toFixed(1) + unit;
               }
-
+            }
               tbody.appendChild(row);
             });
           });
