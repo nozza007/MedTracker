@@ -68,6 +68,7 @@
         <th>Medication</th>
         <th class="morning">Morning</th>
         <th class="evening">Evening</th>
+        <th>Unit</th>
         <th>Update</th>
         <th>Remove</th>
       </tr>
@@ -131,6 +132,7 @@
         this.morning = data?.morning ?? "";
         this.evening = data?.evening ?? "";
         this.hidden = data?.hidden || false;
+        this.unit = data?.unit || "ml";  
       }
 
       render() {
@@ -160,6 +162,7 @@
           const inputs = tr.querySelectorAll('input');
           this.morning = inputs[0].value.trim();
           this.evening = inputs[1].value.trim();
+          this.unit = unitSelect.value;
           this.save();
         };
 
