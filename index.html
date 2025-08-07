@@ -153,8 +153,8 @@
             const row = document.createElement("tr");
             row.innerHTML = `
               <td>${med}</td>
-              <td class="morning">${formatDose(medData.morning)}</td>
-              <td class="evening">${formatDose(medData.evening)}</td>
+              <td class="morning">${formatDose(medData.morning, medData.unit)}</td>
+              <td class="evening">${formatDose(medData.evening, medData.unit)}</td>
               <td class="previous-dose">${getPreviousDose(medData)}</td>
             `;
 
@@ -183,6 +183,14 @@
           return value;
         }
         return value + " ml";
+      }
+
+      function formatWithUnit(value, unit = "ml") {
+        if (!value || value === "—") return "—";
+        if (typeof value === "string" && (value.includes("ml") || value.includes("drops") || value.includes("tablet"))) {
+          return value;
+        }
+        return `${value} ${unit}`;
       }
 
       function getPreviousDose(medData) {
